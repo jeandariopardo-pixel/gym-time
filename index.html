@@ -3053,14 +3053,20 @@ function switchNutriMode(mode) {
 // Smart Offline Text Parsing Fallback
 function parseTextDescriptionLocally(text) {
   const clean = text.toLowerCase();
-  const words = clean.split(/[\s,.;()]+/);
+  // Filter out short filler words to prevent false positives (like "y", "de", "con", "un", "la")
+  const words = clean.split(/[\s,.;()]+/).filter(w => w.length >= 3);
   let estimatedItems = [];
   
   localFoodsDb.forEach(food => {
     const foodKeywords = food.name.toLowerCase().split(/[\s()]+/);
     const matches = foodKeywords.filter(keyword => {
       if (keyword.length < 3) return false;
-      return words.some(word => word.startsWith(keyword) || keyword.startsWith(word));
+      return words.some(word => {
+        if (word === keyword || word === keyword + 's' || word === keyword + 'es' || keyword === word + 's' || keyword === word + 'es') return true;
+        // Prefix matching for longer, specific keywords (length >= 4)
+        if (word.length >= 4 && keyword.startsWith(word)) return true;
+        return false;
+      });
     });
     
     if (matches.length >= 1) {
