@@ -3046,12 +3046,12 @@ function startAiScan() {
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onload = async function () {
-    const base64Data = reader.result.split(',')[1];
+    const imageDataUrl = reader.result;
     const apiKey = localStorage.getItem("openai_api_key");
     
     if (apiKey) {
       // API call using gpt-4o-mini (highly compatible and fast)
-      const result = await analyzeFoodWithOpenAi(base64Data);
+      const result = await analyzeFoodWithOpenAi(imageDataUrl);
       if (spinner) spinner.classList.add("hidden");
       
       if (result && result.items) {
@@ -3059,7 +3059,7 @@ function startAiScan() {
           addFoodItem(item);
         });
       } else {
-        alert("La IA de OpenAI falló. Se usará una simulación local.");
+        // analyzeFoodWithOpenAi handles specific alerts, so we run fallback here
         runPhotoFallback();
       }
     } else {
@@ -3083,12 +3083,12 @@ function runPhotoFallback() {
   showToast("⚠️ Simulación cargada (Ingresa tu API Key en ajustes para fotos reales)");
 }
 
-async function analyzeFoodWithOpenAi(base64Data) {
+async function analyzeFoodWithOpenAi(imageDataUrl) {
   const apiKey = localStorage.getItem("openai_api_key");
   const prompt = "Analiza esta imagen de comida. Identifica CADA alimento visible y proporciona en formato JSON estricto: {items: [{name, portion_estimate_g, calories, protein_g, carbs_g, fat_g}], totals: {calories, protein_g, carbs_g, fat_g}, confidence: 'high/medium/low', notes: string}. Estima las porciones visualmente sin báscula.";
   
   const payload = {
-    model: "gpt-4o-mini", // Changed to gpt-4o-mini for maximum compatibility and vision support
+    model: "gpt-4o-mini",
     response_format: { type: "json_object" },
     messages: [
       {
@@ -3098,7 +3098,7 @@ async function analyzeFoodWithOpenAi(base64Data) {
           {
             type: "image_url",
             image_url: {
-              url: `data:image/jpeg;base64,${base64Data}`
+              url: imageDataUrl
             }
           }
         ]
@@ -3115,11 +3115,19 @@ async function analyzeFoodWithOpenAi(base64Data) {
       },
       body: JSON.stringify(payload)
     });
-    if (!response.ok) return null;
+    
+    if (!response.ok) {
+      const errRes = await response.json().catch(() => ({}));
+      const errMsg = errRes.error ? errRes.error.message : "Error desconocido en el servidor de OpenAI.";
+      alert(`Error de OpenAI: ${errMsg}`);
+      return null;
+    }
+    
     const data = await response.json();
     return JSON.parse(data.choices[0].message.content);
   } catch (err) {
     console.error(err);
+    alert("Error de red o conexión al intentar llamar a OpenAI.");
     return null;
   }
 }
