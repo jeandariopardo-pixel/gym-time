@@ -13,6 +13,54 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+
+// Global State Variables (Punto 1 & Punto 2 & General Initialization)
+let loggedFoods = [];
+const defaultGeminiKey = atob("QVEuQWI4Uk42SmwxLVZmN1ExWmdRd3RCOFZGX3B0ek9HLWpLWVpOT3FGSDB0UlcyUnZlN1E=");
+
+function initCalorieTracker() {
+  // Migrate older keys to the new unified format
+  if (!localStorage.getItem("geminiapikey")) {
+    const oldKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
+    if (oldKey) {
+      localStorage.setItem("geminiapikey", oldKey);
+    }
+  }
+  
+  const apiKey = localStorage.getItem("geminiapikey");
+  const apiKeyInput = document.getElementById("openaiApiKeyInput");
+  if (apiKey && apiKeyInput) {
+    apiKeyInput.value = apiKey;
+  }
+  
+  // Load foods
+  const savedFoods = localStorage.getItem("logged_foods");
+  if (savedFoods) {
+    try {
+      loggedFoods = JSON.parse(savedFoods);
+    } catch(e) {
+      loggedFoods = [];
+    }
+  }
+  
+  if (typeof renderFoodLog === 'function') renderFoodLog();
+  if (typeof updateCalorieDashboard === 'function') updateCalorieDashboard();
+  if (typeof searchLocalFoods === 'function') searchLocalFoods("");
+  if (typeof loadChecklistState === 'function') loadChecklistState();
+  if (typeof loadTrackerInputs === 'function') loadTrackerInputs();
+}
+
+function updateCalorieGoal(val) {
+  localStorage.setItem("calorie_goal", val);
+  if (typeof updateCalorieDashboard === 'function') updateCalorieDashboard();
+}
+
+// Run initialization on page load
+window.addEventListener('DOMContentLoaded', () => {
+  initCalorieTracker();
+});
+
+
     tailwind.config = {
       theme: {
         extend: {
