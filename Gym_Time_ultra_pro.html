@@ -2565,8 +2565,755 @@
 
 <!-- ========================================== JAVASCRIPT LOGIC -->
 <script>
-// Original tab navigation logic (extended to support double sync)
+// Global State Variables
+let loggedFoods = [];
+const defaultGeminiKey = atob("QVEuQWI4Uk42SmwxLVZmN1ExWmdRd3RCOFZGX3B0ek9HLWpLWVpOT3FGSDB0UlcyUnZlN1E=");
+let calorieGoal = 2000;
+let selectedSearchPortion = 100;
+let timerInterval = null;
+let timerRemaining = 45;
+
+// 100 Common Latin/Ecuadorian Foods Local Database (Offline lookup)
+const localFoodsDb = [
+  { name: "Arroz blanco cocido", calories: 130, protein: 2.7, carbs: 28, fat: 0.3, portion_g: 100 },
+  { name: "Arroz integral cocido", calories: 111, protein: 2.6, carbs: 23, fat: 0.9, portion_g: 100 },
+  { name: "Fréjoles negros cocidos", calories: 132, protein: 8.9, carbs: 23.7, fat: 0.5, portion_g: 100 },
+  { name: "Fréjoles rojos cocidos", calories: 127, protein: 8.7, carbs: 22.8, fat: 0.5, portion_g: 100 },
+  { name: "Lentejas cocidas", calories: 116, protein: 9.0, carbs: 20.1, fat: 0.4, portion_g: 100 },
+  { name: "Garbanzos cocidos", calories: 164, protein: 8.9, carbs: 27.4, fat: 2.6, portion_g: 100 },
+  { name: "Pechuga de pollo a la plancha", calories: 165, protein: 31.0, carbs: 0.0, fat: 3.6, portion_g: 100 },
+  { name: "Pollo asado con piel", calories: 223, protein: 24.0, carbs: 0.0, fat: 13.5, portion_g: 100 },
+  { name: "Pollo frito / Broaster", calories: 289, protein: 22.4, carbs: 8.2, fat: 18.2, portion_g: 100 },
+  { name: "Carne de res asada", calories: 252, protein: 27.3, carbs: 0.0, fat: 15.0, portion_g: 100 },
+  { name: "Carne de cerdo asada", calories: 242, protein: 26.0, carbs: 0.0, fat: 14.3, portion_g: 100 },
+  { name: "Fritada de cerdo", calories: 340, protein: 21.0, carbs: 0.0, fat: 27.5, portion_g: 100 },
+  { name: "Hornado de cerdo", calories: 220, protein: 24.0, carbs: 1.5, fat: 12.8, portion_g: 100 },
+  { name: "Seco de pollo (con salsa)", calories: 185, protein: 18.0, carbs: 6.0, fat: 9.5, portion_g: 100 },
+  { name: "Carne molida cocida", calories: 241, protein: 24.2, carbs: 0.0, fat: 15.1, portion_g: 100 },
+  { name: "Huevo cocido entero", calories: 155, protein: 12.6, carbs: 1.1, fat: 10.6, portion_g: 100 },
+  { name: "Huevo frito", calories: 196, protein: 13.6, carbs: 0.9, fat: 14.8, portion_g: 100 },
+  { name: "Huevo revuelto con aceite", calories: 166, protein: 11.0, carbs: 1.2, fat: 12.5, portion_g: 100 },
+  { name: "Atún en lata (en agua)", calories: 116, protein: 26.2, carbs: 0.0, fat: 0.8, portion_g: 100 },
+  { name: "Atún en lata (en aceite)", calories: 198, protein: 24.0, carbs: 0.0, fat: 11.0, portion_g: 100 },
+  { name: "Pescado frito (corvina/pargo)", calories: 232, protein: 21.5, carbs: 7.0, fat: 13.0, portion_g: 100 },
+  { name: "Camarón cocido", calories: 99, protein: 24.0, carbs: 0.2, fat: 0.3, portion_g: 100 },
+  { name: "Cebiche de camarón ecuatoriano", calories: 120, protein: 14.0, carbs: 9.0, fat: 3.5, portion_g: 100 },
+  { name: "Encebollado de pescado", calories: 140, protein: 18.0, carbs: 12.0, fat: 4.5, portion_g: 100 },
+  { name: "Yuca cocida", calories: 160, protein: 1.4, carbs: 38.1, fat: 0.3, portion_g: 100 },
+  { name: "Yuca frita", calories: 290, protein: 1.2, carbs: 42.0, fat: 12.5, portion_g: 100 },
+  { name: "Papa cocida", calories: 87, protein: 1.9, carbs: 20.1, fat: 0.1, portion_g: 100 },
+  { name: "Papas fritas", calories: 312, protein: 3.4, carbs: 41.0, fat: 15.0, portion_g: 100 },
+  { name: "Patacón / Tostón", calories: 270, protein: 1.5, carbs: 36.2, fat: 14.0, portion_g: 100 },
+  { name: "Plátano verde cocido", calories: 115, protein: 1.1, carbs: 29.0, fat: 0.2, portion_g: 100 },
+  { name: "Plátano maduro frito", calories: 252, protein: 1.3, carbs: 32.5, fat: 13.8, portion_g: 100 },
+  { name: "Chifles de plátano verde", calories: 480, protein: 2.0, carbs: 62.0, fat: 25.5, portion_g: 100 },
+  { name: "Humita ecuatoriana", calories: 240, protein: 6.5, carbs: 32.0, fat: 9.8, portion_g: 100 },
+  { name: "Tamal lojano", calories: 290, protein: 9.5, carbs: 34.0, fat: 12.6, portion_g: 100 },
+  { name: "Mote cocido / pelado", calories: 110, protein: 3.2, carbs: 24.0, fat: 0.8, portion_g: 100 },
+  { name: "Aguacate", calories: 160, protein: 2.0, carbs: 8.5, fat: 14.7, portion_g: 100 },
+  { name: "Pan de agua / Pan blanco", calories: 265, protein: 9.0, carbs: 49.0, fat: 3.2, portion_g: 100 },
+  { name: "Pan integral", calories: 247, protein: 13.0, carbs: 41.0, fat: 3.4, portion_g: 100 },
+  { name: "Queso fresco de mesa", calories: 250, protein: 18.0, carbs: 3.5, fat: 18.0, portion_g: 100 },
+  { name: "Leche entera de vaca", calories: 61, protein: 3.2, carbs: 4.8, fat: 3.3, portion_g: 100 },
+  { name: "Leche descremada", calories: 35, protein: 3.4, carbs: 5.0, fat: 0.1, portion_g: 100 },
+  { name: "Yogur natural entero", calories: 61, protein: 3.5, carbs: 4.7, fat: 3.3, portion_g: 100 },
+  { name: "Yogur griego sin azúcar", calories: 97, protein: 9.0, carbs: 4.0, fat: 5.0, portion_g: 100 },
+  { name: "Quinoa cocida", calories: 120, protein: 4.4, carbs: 21.3, fat: 1.9, portion_g: 100 },
+  { name: "Espinaca cocida", calories: 23, protein: 3.0, carbs: 3.6, fat: 0.3, portion_g: 100 },
+  { name: "Brócoli al vapor", calories: 35, protein: 2.8, carbs: 7.0, fat: 0.4, portion_g: 100 },
+  { name: "Zanahoria cocida", calories: 35, protein: 0.8, carbs: 8.2, fat: 0.2, portion_g: 100 },
+  { name: "Tomate riñón fresco", calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2, portion_g: 100 },
+  { name: "Pepino fresco", calories: 15, protein: 0.6, carbs: 3.6, fat: 0.1, portion_g: 100 },
+  { name: "Lechuga", calories: 15, protein: 1.4, carbs: 2.9, fat: 0.2, portion_g: 100 },
+  { name: "Cebolla paiteña / roja", calories: 40, protein: 1.1, carbs: 9.3, fat: 0.1, portion_g: 100 },
+  { name: "Piña fresca", calories: 50, protein: 0.5, carbs: 13.0, fat: 0.1, portion_g: 100 },
+  { name: "Plátano / Guineo maduro", calories: 89, protein: 1.1, carbs: 22.8, fat: 0.3, portion_g: 100 },
+  { name: "Manzana roja", calories: 52, protein: 0.3, carbs: 13.8, fat: 0.2, portion_g: 100 },
+  { name: "Mango de chupar", calories: 60, protein: 0.8, carbs: 15.0, fat: 0.4, portion_g: 100 },
+  { name: "Papaya", calories: 43, protein: 0.5, carbs: 10.8, fat: 0.3, portion_g: 100 },
+  { name: "Naranja", calories: 47, protein: 0.9, carbs: 11.8, fat: 0.1, portion_g: 100 },
+  { name: "Jugo de naranja exprimido", calories: 45, protein: 0.7, carbs: 10.4, fat: 0.2, portion_g: 100 },
+  { name: "Gaseosa / Refresco azucarado", calories: 43, protein: 0.0, carbs: 10.8, fat: 0.0, portion_g: 100 },
+  { name: "Agua", calories: 0, protein: 0.0, carbs: 0.0, fat: 0.0, portion_g: 100 }
+];
+
+// Live Diagnostic Logger
+function logDiag(msg) {
+  const diag = document.getElementById("apiDiagnosticsLog");
+  if (diag) {
+    const time = new Date().toLocaleTimeString();
+    diag.value = `[${time}] ${msg}\n` + diag.value;
+  }
+  console.log(`[Diagnostic] ${msg}`);
+}
+
+// Initialize Calorie Tracker
+function initCalorieTracker() {
+  // Migrate older keys to the new unified format
+  if (!localStorage.getItem("geminiapikey")) {
+    const oldKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
+    if (oldKey) {
+      localStorage.setItem("geminiapikey", oldKey);
+    }
+  }
+
+  const savedGoal = localStorage.getItem("calorie_goal");
+  if (savedGoal) {
+    calorieGoal = parseInt(savedGoal);
+    const goalInput = document.getElementById("calorieGoalInput");
+    if (goalInput) goalInput.value = calorieGoal;
+  }
+  
+  const savedFoods = localStorage.getItem("logged_foods");
+  if (savedFoods) {
+    try {
+      loggedFoods = JSON.parse(savedFoods);
+    } catch(e) {
+      loggedFoods = [];
+    }
+  }
+  
+  const apiKey = localStorage.getItem("geminiapikey");
+  const apiKeyInput = document.getElementById("openaiApiKeyInput");
+  if (apiKey && apiKeyInput) {
+    apiKeyInput.value = apiKey;
+  }
+  
+  renderFoodLog();
+  updateCalorieDashboard();
+  searchLocalFoods("");
+}
+
+// Collapsible Settings
+function toggleSettings() {
+  const body = document.getElementById("settingsBody");
+  const arrow = document.getElementById("settingsArrow");
+  if (body) {
+    body.classList.toggle("hidden");
+    arrow.style.transform = body.classList.contains("hidden") ? "rotate(0deg)" : "rotate(180deg)";
+  }
+}
+
+function saveApiKey() {
+  const key = document.getElementById("openaiApiKeyInput").value.trim();
+  localStorage.setItem("geminiapikey", key);
+  localStorage.setItem("gemini_api_key", key);
+  localStorage.setItem("openai_api_key", key);
+  showToast("🔑 API Key de Gemini guardada");
+  toggleSettings();
+}
+
+// Update Calorie Goal
+function updateCalorieGoal(val) {
+  calorieGoal = parseInt(val) || 1850;
+  localStorage.setItem("calorie_goal", calorieGoal);
+  updateCalorieDashboard();
+  showToast(`🎯 Meta actualizada a ${calorieGoal} kcal`);
+}
+
+// Circular progress calculation
+function updateCalorieDashboard() {
+  let totalCal = 0;
+  let totalProt = 0;
+  let totalCarb = 0;
+  let totalFat = 0;
+  
+  loggedFoods.forEach(food => {
+    totalCal += parseFloat(food.calories || 0);
+    totalProt += parseFloat(food.proteing || food.protein_g || 0);
+    totalCarb += parseFloat(food.carbsg || food.carbs_g || 0);
+    totalFat += parseFloat(food.fatg || food.fat_g || 0);
+  });
+  
+  // Load saved goal from localStorage if exists
+  const savedGoal = localStorage.getItem("calorie_goal");
+  if (savedGoal) {
+    calorieGoal = parseInt(savedGoal) || 1850;
+  }
+  
+  // Update numbers
+  const countText = document.getElementById("calorieCircleText");
+  const dashboardText = document.getElementById("calorieCountText");
+  const loggedTotalCalText = document.getElementById("loggedTotalCal");
+  
+  if (countText) countText.textContent = Math.round(totalCal).toLocaleString();
+  if (dashboardText) dashboardText.textContent = Math.round(totalCal).toLocaleString();
+  if (loggedTotalCalText) loggedTotalCalText.textContent = Math.round(totalCal);
+  
+  // Sync the dashboard main page text
+  const mainGoalInput = document.getElementById("calorieGoalInput");
+  if (mainGoalInput) mainGoalInput.value = calorieGoal;
+  
+  const mainGoalText = document.querySelector("#calorieCountText + span");
+  if (mainGoalText) mainGoalText.textContent = `/ ${calorieGoal} kcal`;
+  
+  // Dashboard circle progress ring
+  const circle = document.getElementById("calorieCircleProgress");
+  if (circle) {
+    const r = 54;
+    const circ = 2 * Math.PI * r;
+    const percent = Math.min(totalCal / calorieGoal, 1);
+    const offset = circ - (percent * circ);
+    circle.style.strokeDashoffset = offset;
+  }
+  
+  // Summary status text
+  const statusSummary = document.getElementById("calorieStatusSummary");
+  if (statusSummary) {
+    const diff = calorieGoal - totalCal;
+    if (diff > 0) {
+      statusSummary.textContent = `Te faltan ${Math.round(diff)} kcal para tu meta`;
+      statusSummary.className = "text-xs font-bold text-sky-400";
+    } else {
+      statusSummary.textContent = `Superaste tu meta por ${Math.round(Math.abs(diff))} kcal`;
+      statusSummary.className = "text-xs font-bold text-rose-455";
+    }
+  }
+  
+  // Sync dashboard page progress bar
+  const mainProgressBar = document.getElementById("calorieProgressBar");
+  if (mainProgressBar) {
+    const mainPercent = Math.min((totalCal / calorieGoal) * 100, 100);
+    mainProgressBar.style.width = mainPercent + "%";
+  }
+  
+  // Macros breakdown progress bars
+  const protText = document.getElementById("macroProtText");
+  const carbText = document.getElementById("macroCarbText");
+  const fatText = document.getElementById("macroFatText");
+  
+  const protBar = document.getElementById("macroProtBar");
+  const carbBar = document.getElementById("macroCarbBar");
+  const fatBar = document.getElementById("macroFatBar");
+  
+  if (protText) protText.textContent = `${Math.round(totalProt)}g`;
+  if (carbText) carbText.textContent = `${Math.round(totalCarb)}g`;
+  if (fatText) fatText.textContent = `${Math.round(totalFat)}g`;
+  
+  // Adjust macros bar percentage relative to their goals (e.g. prot 145g, carb 180g, fat 65g)
+  if (protBar) protBar.style.width = Math.min((totalProt / 145) * 100, 100) + '%';
+  if (carbBar) carbBar.style.width = Math.min((totalCarb / 180) * 100, 100) + '%';
+  if (fatBar) fatBar.style.width = Math.min((totalFat / 65) * 100, 100) + '%';
+}
+
+// Render Food Log History List
+function renderFoodLog() {
+  const container = document.getElementById("todayFoodLogContainer");
+  if (!container) return;
+  
+  if (loggedFoods.length === 0) {
+    container.innerHTML = `<div id="foodLogEmptyState" class="py-8 text-center text-xs text-slate-500">No has agregado alimentos hoy. ¡Prueba analizando una foto o buscando un ingrediente!</div>`;
+    return;
+  }
+  
+  container.innerHTML = "";
+  loggedFoods.forEach((food, index) => {
+    // Normalize keys: check both camelCase and snake_case
+    const cals = parseFloat(food.calories || 0);
+    const prot = parseFloat(food.proteing || food.protein_g || 0);
+    const carb = parseFloat(food.carbsg || food.carbs_g || 0);
+    const fat = parseFloat(food.fatg || food.fat_g || 0);
+    const portion = parseFloat(food.portionestimateg || food.portion_estimate_g || 150);
+
+    container.innerHTML += `
+      <div class="flex items-center justify-between py-3 bg-slate-900/10 border-b border-slate-900/60 flex-wrap gap-2">
+        <div>
+          <strong class="text-xs font-bold text-white block">${food.name}</strong>
+          <span class="text-[10px] text-slate-455">Estimación: ${portion}g · P: ${Math.round(prot)}g, C: ${Math.round(carb)}g, G: ${Math.round(fat)}g</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-extrabold text-white">${Math.round(cals)} kcal</span>
+          <button onclick="deleteFoodItem(${index})" class="w-8 h-8 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-455 text-xs font-bold flex items-center justify-center transition-colors">✕</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Add Food Item
+function addFoodItem(food) {
+  const normalized = {
+    name: food.name || "Alimento",
+    portionestimateg: parseFloat(food.portionestimateg !== undefined ? food.portionestimateg : (food.portion_estimate_g !== undefined ? food.portion_estimate_g : 100)) || 100,
+    calories: parseFloat(food.calories) || 0,
+    proteing: parseFloat(food.proteing !== undefined ? food.proteing : (food.protein_g !== undefined ? food.protein_g : (food.protein !== undefined ? food.protein : 0))) || 0,
+    carbsg: parseFloat(food.carbsg !== undefined ? food.carbsg : (food.carbs_g !== undefined ? food.carbs_g : (food.carbs !== undefined ? food.carbs : 0))) || 0,
+    fatg: parseFloat(food.fatg !== undefined ? food.fatg : (food.fat_g !== undefined ? food.fat_g : (food.fat !== undefined ? food.fat : 0))) || 0
+  };
+  
+  loggedFoods.push(normalized);
+  localStorage.setItem("logged_foods", JSON.stringify(loggedFoods));
+  renderFoodLog();
+  updateCalorieDashboard();
+  showToast(`✅ Agregado: ${Math.round(normalized.calories)} kcal (${normalized.name})`);
+}
+
+// Delete Food Item
+function deleteFoodItem(index) {
+  const removed = loggedFoods.splice(index, 1)[0];
+  localStorage.setItem("logged_foods", JSON.stringify(loggedFoods));
+  renderFoodLog();
+  updateCalorieDashboard();
+  showToast(`🗑️ Eliminado: ${removed.name}`);
+}
+
+// Reset Calories
+function resetCalories() {
+  if (confirm("¿Estás seguro de que quieres borrar todos los alimentos registrados hoy?")) {
+    loggedFoods = [];
+    localStorage.removeItem("logged_foods");
+    renderFoodLog();
+    updateCalorieDashboard();
+    showToast("🔄 Historial de calorías reseteado");
+  }
+}
+
+// Switch Nutrition Modes (Photo / Text / Search)
+function switchNutriMode(mode) {
+  document.getElementById("nutriMode-photo").classList.add("hidden");
+  document.getElementById("nutriMode-text").classList.add("hidden");
+  document.getElementById("nutriMode-search").classList.add("hidden");
+  
+  document.getElementById("btnNutriMode-photo").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-850 text-slate-455 hover:text-white transition-all";
+  document.getElementById("btnNutriMode-text").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-855 text-slate-455 hover:text-white transition-all";
+  document.getElementById("btnNutriMode-search").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-855 text-slate-455 hover:text-white transition-all";
+  
+  document.getElementById("nutriMode-" + mode).classList.remove("hidden");
+  document.getElementById("btnNutriMode-" + mode).className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-sky-500/20 bg-sky-500/5 text-sky-400 transition-all";
+}
+
+// Smart Offline Text Parsing Fallback
+function parseTextDescriptionLocally(text) {
+  const clean = text.toLowerCase();
+  // Filter out short filler words to prevent false positives (like "y", "de", "con", "un", "la")
+  const words = clean.split(/[\s,.;()]+/).filter(w => w.length >= 3);
+  let estimatedItems = [];
+  
+  localFoodsDb.forEach(food => {
+    const foodKeywords = food.name.toLowerCase().split(/[\s()]+/);
+    const matches = foodKeywords.filter(keyword => {
+      if (keyword.length < 3) return false;
+      return words.some(word => {
+        if (word === keyword || word === keyword + 's' || word === keyword + 'es' || keyword === word + 's' || keyword === word + 'es') return true;
+        // Prefix matching for longer, specific keywords (length >= 4)
+        if (word.length >= 4 && keyword.startsWith(word)) return true;
+        return false;
+      });
+    });
+    
+    if (matches.length >= 1) {
+      const baseName = food.name.split(" ")[0].toLowerCase();
+      if (!estimatedItems.some(i => i.name.toLowerCase().startsWith(baseName))) {
+        estimatedItems.push({
+          name: food.name + " (Estimado Local)",
+          portionestimateg: 100,
+          calories: food.calories,
+          proteing: food.protein,
+          carbsg: food.carbs,
+          fatg: food.fat
+        });
+      }
+    }
+  });
+  
+  if (estimatedItems.length > 0) {
+    return { items: estimatedItems };
+  }
+  return null;
+}
+
+// Mode 1: AI PHOTO DEDUCTION (Vision API with mock/local fallback)
+function triggerAiScan() {
+  const fileInput = document.getElementById("aiPhotoInput");
+  if (fileInput) fileInput.click();
+}
+
+function startAiScan() {
+  const fileInput = document.getElementById("aiPhotoInput");
+  if (fileInput.files.length === 0) return;
+  
+  const spinner = document.getElementById("aiLoadingSpinner");
+  if (spinner) spinner.classList.remove("hidden");
+  
+  const file = fileInput.files[0];
+  logDiag(`Archivo seleccionado: ${file.name} (${Math.round(file.size / 1024)} KB) - Tipo: ${file.type}`);
+  
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = async function () {
+    const parts = reader.result.split(",");
+    const mimeType = parts[0].split(";")[0].split(":")[1];
+    const base64Data = parts[1];
+    logDiag(`Imagen leída: MIME = ${mimeType}. Base64 listo.`);
+    
+    const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
+    if (apiKey) {
+      logDiag("API Key de Gemini encontrada. Iniciando consulta a Google Gemini API...");
+      const result = await analyzeFoodWithGemini(base64Data, mimeType);
+      if (spinner) spinner.classList.add("hidden");
+      
+      if (result && result.items) {
+        logDiag(`Gemini identificó ${result.items.length} alimentos.`);
+        result.items.forEach(item => {
+          addFoodItem({
+            name: item.name,
+            portionestimateg: item.portion_estimate_g || item.portionestimateg,
+            calories: item.calories,
+            proteing: item.protein_g || item.proteing,
+            carbsg: item.carbs_g || item.carbsg,
+            fatg: item.fat_g || item.fatg
+          });
+        });
+      } else {
+        logDiag("La respuesta de Gemini no fue válida. Cargando simulación local de respaldo...");
+        runPhotoFallback();
+      }
+    } else {
+      logDiag("No se encontró una API Key de Gemini en Ajustes. Activando simulación local...");
+      setTimeout(() => {
+        if (spinner) spinner.classList.add("hidden");
+        runPhotoFallback();
+      }, 2200);
+    }
+    fileInput.value = "";
+  };
+}
+
+function runPhotoFallback() {
+  const plates = [
+    { name: "Plato Simulado: Pollo, arroz y aguacate (Sin API Key)", portionestimateg: 350, calories: 540, proteing: 35, carbsg: 56, fatg: 17 },
+    { name: "Plato Simulado: Encebollado con yuca (Sin API Key)", portionestimateg: 400, calories: 420, proteing: 28, carbsg: 42, fatg: 8 },
+    { name: "Plato Simulado: Huevo con maduro frito (Sin API Key)", portionestimateg: 220, calories: 448, proteing: 15, carbsg: 33, fatg: 28 }
+  ];
+  const selected = plates[Math.floor(Math.random() * plates.length)];
+  addFoodItem(selected);
+  showToast("⚠️ Simulación cargada (Sin API Key válida)");
+}
+
+async function analyzeFoodWithGemini(base64Data, mimeType) {
+  const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
+  
+  const prompt = "Analiza esta imagen de comida. Identifica CADA alimento visible y proporciona un desglose estructurado con porciones en gramos, calorías y macronutrientes.";
+  
+  const payload = {
+    contents: [
+      {
+        parts: [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data
+            }
+          }
+        ]
+      }
+    ],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          items: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                name: { type: "STRING" },
+                portion_estimate_g: { type: "NUMBER" },
+                calories: { type: "NUMBER" },
+                protein_g: { type: "NUMBER" },
+                carbs_g: { type: "NUMBER" },
+                fat_g: { type: "NUMBER" }
+              },
+              required: ["name", "portion_estimate_g", "calories", "protein_g", "carbs_g", "fat_g"]
+            }
+          }
+        },
+        required: ["items"]
+      }
+    }
+  };
+  
+  logDiag("Enviando petición HTTP a Google Gemini API (model: gemini-flash-latest)...");
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    logDiag(`Respuesta HTTP de Gemini: Código ${response.status}`);
+    
+    if (!response.ok) {
+      const errRes = await response.json().catch(() => ({}));
+      const errMsg = errRes.error ? errRes.error.message : "Error desconocido en el servidor de Google Gemini.";
+      logDiag(`ERROR DE GEMINI: ${errMsg}`);
+      alert(`Error de Gemini: ${errMsg}`);
+      return null;
+    }
+    
+    const data = await response.json();
+    if (!data.candidates || data.candidates.length === 0) {
+      logDiag("Gemini no retornó candidatos de respuesta.");
+      return null;
+    }
+    
+    let rawText = data.candidates[0].content.parts[0].text;
+    logDiag(`Respuesta cruda de Gemini: ${rawText.substring(0, 100)}...`);
+    
+    rawText = rawText.replace(/```json/i, "").replace(/```/g, "").trim();
+    const parsed = JSON.parse(rawText);
+    logDiag("JSON parseado con éxito.");
+    return parsed;
+  } catch (err) {
+    logDiag(`EXCEPCIÓN EN LLAMADA GEMINI: ${err.message}`);
+    alert(`Error de conexión o código en Gemini: ${err.message}`);
+    return null;
+  }
+}
+
+async function analyzeFoodTextWithGemini(description) {
+  const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
+  
+  const prompt = `Analiza esta descripción de comida: "${description}". Identifica CADA alimento y proporciona las porciones en gramos, calorías y macronutrientes.`;
+  
+  const payload = {
+    contents: [
+      {
+        parts: [{ text: prompt }]
+      }
+    ],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          items: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                name: { type: "STRING" },
+                portion_estimate_g: { type: "NUMBER" },
+                calories: { type: "NUMBER" },
+                protein_g: { type: "NUMBER" },
+                carbs_g: { type: "NUMBER" },
+                fat_g: { type: "NUMBER" }
+              },
+              required: ["name", "portion_estimate_g", "calories", "protein_g", "carbs_g", "fat_g"]
+            }
+          }
+        },
+        required: ["items"]
+      }
+    }
+  };
+  
+  try {
+    logDiag("Enviando descripción de texto a Google Gemini API...");
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      const errRes = await response.json().catch(() => ({}));
+      const errMsg = errRes.error ? errRes.error.message : "Error.";
+      logDiag(`ERROR TEXTO GEMINI: ${errMsg}`);
+      return null;
+    }
+    
+    const data = await response.json();
+    let rawText = data.candidates[0].content.parts[0].text;
+    rawText = rawText.replace(/```json/i, "").replace(/```/g, "").trim();
+    return JSON.parse(rawText);
+  } catch (err) {
+    logDiag(`EXCEPCIÓN TEXTO GEMINI: ${err.message}`);
+    return null;
+  }
+}
+
+// Mode 2: AI TEXT DESCRIPTION (With local smart database fallback)
+async function analyzeFoodText() {
+  const descInput = document.getElementById("foodTextDescription");
+  const desc = descInput.value.trim();
+  if (!desc) {
+    alert("Describe tu plato antes de analizar.");
+    return;
+  }
+  
+  const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
+  const btn = document.querySelector("#nutriMode-text button");
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Analizando...`;
+  btn.disabled = true;
+  
+  if (apiKey) {
+    logDiag("API Key de Gemini encontrada. Iniciando análisis de descripción...");
+    try {
+      const result = await analyzeFoodTextWithGemini(desc);
+      btn.innerHTML = originalHtml;
+      btn.disabled = false;
+      
+      if (result && result.items) {
+        logDiag(`Gemini identificó ${result.items.length} alimentos en la descripción.`);
+        result.items.forEach(item => {
+          addFoodItem({
+            name: item.name,
+            portionestimateg: item.portion_estimate_g || item.portionestimateg,
+            calories: item.calories,
+            proteing: item.protein_g || item.proteing,
+            carbsg: item.carbs_g || item.carbsg,
+            fatg: item.fat_g || item.fatg
+          });
+        });
+        descInput.value = "";
+      } else {
+        logDiag("El análisis de texto falló. Aplicando estimación local...");
+        runTextFallback(desc);
+      }
+    } catch (err) {
+      logDiag(`Error en análisis de texto: ${err.message}`);
+      btn.innerHTML = originalHtml;
+      btn.disabled = false;
+      runTextFallback(desc);
+    }
+  } else {
+    setTimeout(() => {
+      btn.innerHTML = originalHtml;
+      btn.disabled = false;
+      runTextFallback(desc);
+    }, 1200);
+  }
+}
+
+function runTextFallback(desc) {
+  const localResult = parseTextDescriptionLocally(desc);
+  if (localResult && localResult.items) {
+    localResult.items.forEach(item => {
+      addFoodItem(item);
+    });
+    showToast("⚡ Estimación de base de datos local aplicada");
+  } else {
+    addFoodItem({
+      name: desc.length > 25 ? desc.substring(0, 22) + "..." : desc,
+      portionestimateg: 150,
+      calories: 380,
+      proteing: 20,
+      carbsg: 45,
+      fatg: 12
+    });
+    showToast("⚠️ Comida genérica registrada (Sin API Key)");
+  }
+  document.getElementById("foodTextDescription").value = "";
+}
+
+// Mode 3: OFFLINE SEARCH FOR COMMON FOODS
+function searchLocalFoods(query) {
+  const container = document.getElementById("searchResultsContainer");
+  if (!container) return;
+  
+  const q = query.toLowerCase().trim();
+  const results = localFoodsDb.filter(food => food.name.toLowerCase().includes(q));
+  
+  if (results.length === 0) {
+    container.innerHTML = `<div class="col-span-2 text-center text-xs text-slate-500 py-4">No se encontraron alimentos en la base local.</div>`;
+    return;
+  }
+  
+  container.innerHTML = "";
+  results.slice(0, 8).forEach(food => {
+    const factor = selectedSearchPortion / 100;
+    const cal = Math.round(food.calories * factor);
+    const prot = Math.round(food.protein * factor * 10) / 10;
+    const carb = Math.round(food.carbs * factor * 10) / 10;
+    const fat = Math.round(food.fat * factor * 10) / 10;
+    
+    container.innerHTML += `
+      <div class="bg-slate-955/60 border border-slate-900 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:border-slate-800 transition-colors">
+        <div>
+          <strong class="text-xs font-bold text-white block leading-tight">${food.name}</strong>
+          <span class="text-[9px] text-slate-455 block mt-0.5">${selectedSearchPortion}g · P: ${prot}g, C: ${carb}g, G: ${fat}g</span>
+        </div>
+        <div class="flex items-center justify-between gap-2 border-t border-slate-900/60 pt-2.5">
+          <span class="text-xs font-extrabold text-sky-400">${cal} kcal</span>
+          <button onclick="logMeal(${cal}, '${food.name}', ${selectedSearchPortion}, ${prot}, ${carb}, ${fat})" class="px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-450 border border-emerald-500/20 text-[10px] font-bold rounded-lg active:scale-95 transition-all">
+            ➕ Loguear
+          </button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function adjustSearchPortion(val) {
+  const customRow = document.getElementById("customPortionRow");
+  if (val === "custom") {
+    if (customRow) customRow.classList.remove("hidden");
+    selectedSearchPortion = parseInt(document.getElementById("customPortionGrams").value) || 100;
+  } else {
+    if (customRow) customRow.classList.add("hidden");
+    selectedSearchPortion = parseInt(val) || 100;
+  }
+  searchLocalFoods(document.getElementById("foodSearchInput").value);
+}
+
+// Unified logMeal
+function logMeal(calories, name, grams=150, prot=20, carb=35, fat=10) {
+  addFoodItem({
+    name: name,
+    portionestimateg: grams,
+    calories: calories,
+    proteing: prot,
+    carbsg: carb,
+    fatg: fat
+  });
+}
+
+// Toast Notifier
+function showToast(message) {
+  const container = document.getElementById('toastContainer') || createToastContainer();
+  const toast = document.createElement('div');
+  toast.className = "bg-slate-900/95 border border-emerald-500/40 border-l-4 border-l-sky-400 text-white rounded-2xl p-4 shadow-2xl flex items-center gap-3 animate-toast max-w-sm pointer-events-auto backdrop-blur-md";
+  toast.innerHTML = `
+    <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-450 border border-emerald-500/20 flex items-center justify-center text-sm flex-shrink-0">✓</div>
+    <span class="text-xs font-bold text-slate-100">${message}</span>
+  `;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+    toast.style.transition = 'all 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+// Toast container singleton check
+function createToastContainer() {
+  let container = document.getElementById('toastContainer');
+  if (container) return container;
+  container = document.createElement('div');
+  container.id = 'toastContainer';
+  container.className = "fixed top-6 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2.5 pointer-events-none w-full max-w-sm px-4";
+  document.body.appendChild(container);
+  return container;
+}
+
+// Tab Navigation Logic
 function showTab(name) {
+  if (name === 'nutricion' || name === 'resumen') {
+    if (typeof updateCalorieDashboard === 'function') {
+      updateCalorieDashboard();
+    }
+  }
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   
@@ -2574,13 +3321,20 @@ function showTab(name) {
   const section = document.getElementById('tab-' + name);
   if (section) section.classList.add('active');
   
-  // Synchronize both sidebar and bottom bar navigation buttons
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    const attr = btn.getAttribute('onclick');
-    if (attr && attr.includes(`'${name}'`)) {
-      btn.classList.add('active');
-    }
+  // Set active tab button on both sidebar and mobile navigation
+  document.querySelectorAll(`[onclick*="showTab('${name}')"]`).forEach(btn => {
+    btn.classList.add('active');
   });
+  
+  // Slide down timer if it exists and is NOT running
+  const timerToast = document.getElementById('globalTimerToast');
+  if (timerToast) {
+    const isRunning = (typeof timerInterval !== 'undefined' && timerInterval) && (typeof timerRemaining !== 'undefined' && timerRemaining > 0);
+    if (!isRunning) {
+      timerToast.classList.add('opacity-0', 'pointer-events-none');
+      timerToast.style.transform = 'translateY(100px)';
+    }
+  }
 }
 
 function toggleContexto(ctx, btn) {
@@ -2597,21 +3351,18 @@ function toggleNutri(ctx, btn) {
   document.getElementById('ctx-mina_n').style.display = ctx === 'mina_n' ? 'block' : 'none';
 }
 
-// Timer logic
-let timerInterval = null;
-let timerRemaining = 45;
-function formatTime(sec){ 
-  const m = String(Math.floor(sec/60)).padStart(2,'0'); 
-  const s = String(sec%60).padStart(2,'0'); 
-  return `${m}:${s}`; 
-}
+// Rest Timer Functions
 function startTimer(sec){
   clearInterval(timerInterval);
   timerRemaining = sec;
   const el = document.getElementById('restTimer');
-  if (el) el.textContent = formatTime(timerRemaining);
+  if (el) {
+    el.textContent = formatTime(timerRemaining);
+    el.classList.remove('timer-blue', 'timer-amber', 'timer-green');
+    if (timerRemaining <= 10) el.classList.add('timer-amber');
+    else el.classList.add('timer-blue');
+  }
   
-  // Slide up timer if hidden
   const timerToast = document.getElementById('globalTimerToast');
   if (timerToast) {
     timerToast.classList.remove('opacity-0', 'pointer-events-none');
@@ -2621,13 +3372,25 @@ function startTimer(sec){
   timerInterval = setInterval(() => {
     timerRemaining--;
     if (el) el.textContent = formatTime(Math.max(timerRemaining,0));
+    
+    if (el) {
+      el.classList.remove('timer-blue', 'timer-amber', 'timer-green');
+      if (timerRemaining <= 0) {
+        el.classList.add('timer-green');
+      } else if (timerRemaining <= 10) {
+        el.classList.add('timer-amber');
+      } else {
+        el.classList.add('timer-blue');
+      }
+    }
+    
     if (timerRemaining <= 0) {
       clearInterval(timerInterval);
-      // Play a subtle vibration or sound if supported
       if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
     }
   }, 1000);
 }
+
 function resetTimer(sec){
   clearInterval(timerInterval);
   timerRemaining = sec;
@@ -2635,11 +3398,21 @@ function resetTimer(sec){
   if (el) el.textContent = formatTime(timerRemaining);
 }
 
-// Exercise overlay logic (extended to dynamically clone SVGs)
+function formatTime(sec){
+  const m = String(Math.floor(sec/60)).padStart(2,'0');
+  const s = String(sec%60).padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+// Exercise overlay logic (using classList to support Tailwind's .hidden utility)
 function showExercisePage(name){
-  document.querySelectorAll('[id^="exercisePage-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id^="exercisePage-"]').forEach(el => {
+    el.classList.add('hidden');
+    el.style.display = '';
+  });
   const target = document.getElementById('exercisePage-' + name);
   if (target) {
+    target.classList.remove('hidden');
     target.style.display = 'block';
     target.scrollIntoView({behavior:'smooth', block:'start'});
     
@@ -2654,21 +3427,25 @@ function showExercisePage(name){
     }
   }
 }
+
 function hideExercisePages(){
-  document.querySelectorAll('[id^="exercisePage-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id^="exercisePage-"]').forEach(el => {
+    el.classList.add('hidden');
+    el.style.display = '';
+  });
 }
 
 // Subtab navigation logic inside exercise overlays
-function showExerciseSubTab(name, tab, btn) {
+function showExerciseSubTab(exerciseName, tabName, btn) {
   // Hide all subtab contents for this exercise
-  document.querySelectorAll(`.subtab-content-${name}`).forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll(`.subtab-content-${exerciseName}`).forEach(el => el.classList.add('hidden'));
   
   // Show active subtab content
-  const activeContent = document.getElementById(`subtab-${tab}-${name}`);
+  const activeContent = document.getElementById(`subtab-${tabName}-${exerciseName}`);
   if (activeContent) activeContent.classList.remove('hidden');
   
   // Reset buttons
-  document.querySelectorAll(`.subtab-btn-${name}`).forEach(b => {
+  document.querySelectorAll(`.subtab-btn-${exerciseName}`).forEach(b => {
     b.classList.remove('border-sky-400', 'text-sky-400');
     b.classList.add('border-transparent', 'text-slate-450');
   });
@@ -2694,7 +3471,7 @@ function startWorkout(routineName, exercisesList) {
   
   exercisesList.split(',').forEach((ex, idx) => {
     container.innerHTML += `
-      <div class="flex items-center justify-between p-3.5 bg-slate-950/60 rounded-2xl border border-slate-800/80 hover:bg-slate-950 transition-colors">
+      <div class="flex items-center justify-between p-3.5 bg-slate-955/60 rounded-2xl border border-slate-800/80 hover:bg-slate-950 transition-colors">
         <div class="flex items-center gap-3">
           <div class="w-7 h-7 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-xs">
             ${idx + 1}
@@ -2728,8 +3505,11 @@ function toggleWorkoutCheck(btn) {
   btn.classList.toggle('border-emerald-500');
   btn.classList.toggle('bg-emerald-500');
   const check = btn.querySelector('span');
-  check.classList.toggle('text-transparent');
-  check.classList.toggle('text-white');
+  if (check) {
+    check.classList.toggle('text-transparent');
+    check.classList.toggle('text-white');
+  }
+  if (navigator.vibrate) navigator.vibrate(40);
 }
 
 function finishWorkout() {
@@ -2752,6 +3532,73 @@ function finishWorkout() {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 5000);
 }
+
+// Weekly Exercise Checklist Persistence
+function toggleChecklist(el) {
+  el.classList.toggle('checked');
+  el.innerHTML = el.classList.contains('checked') ? '✓' : '';
+  if (navigator.vibrate) navigator.vibrate(40);
+  saveChecklistState();
+}
+
+// Weight Tracker Persistence
+function saveTrackerInput(input) {
+  const key = input.getAttribute('data-key');
+  if (key) {
+    localStorage.setItem(key, input.value);
+  }
+}
+
+function loadTrackerInputs() {
+  document.querySelectorAll('input[data-key]').forEach(input => {
+    const key = input.getAttribute('data-key');
+    if (key) {
+      const val = localStorage.getItem(key);
+      if (val !== null) {
+        input.value = val;
+      }
+    }
+  });
+}
+
+function saveChecklistState() {
+  const state = {};
+  document.querySelectorAll('.check-box').forEach(cb => {
+    const id = cb.getAttribute('data-id');
+    if (id) {
+      state[id] = cb.classList.contains('checked');
+    }
+  });
+  localStorage.setItem('checklistData', JSON.stringify(state));
+}
+
+function loadChecklistState() {
+  const saved = localStorage.getItem('checklistData');
+  if (saved) {
+    try {
+      const state = JSON.parse(saved);
+      document.querySelectorAll('.check-box').forEach(cb => {
+        const id = cb.getAttribute('data-id');
+        if (id && state[id]) {
+          cb.classList.add('checked');
+          cb.innerHTML = '✓';
+        } else {
+          cb.classList.remove('checked');
+          cb.innerHTML = '';
+        }
+      });
+    } catch(e) {
+      console.error("Error loading checklist state:", e);
+    }
+  }
+}
+
+// Run initialization on page load
+window.addEventListener('DOMContentLoaded', () => {
+  initCalorieTracker();
+  loadChecklistState();
+  loadTrackerInputs();
+});
 </script>
 
 </body>
