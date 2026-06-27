@@ -2720,6 +2720,8 @@ function toggleNutri(ctx, btn) {
 
 
 // 100 Common Latin/Ecuadorian Foods Local Database (Offline lookup)
+
+// 100 Common Latin/Ecuadorian Foods Local Database (Offline lookup)
 const localFoodsDb = [
   { name: "Arroz blanco cocido", calories: 130, protein: 2.7, carbs: 28, fat: 0.3, portion_g: 100 },
   { name: "Arroz integral cocido", calories: 111, protein: 2.6, carbs: 23, fat: 0.9, portion_g: 100 },
@@ -2770,7 +2772,7 @@ const localFoodsDb = [
   { name: "Zanahoria cocida", calories: 35, protein: 0.8, carbs: 8.2, fat: 0.2, portion_g: 100 },
   { name: "Tomate riñón fresco", calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2, portion_g: 100 },
   { name: "Pepino fresco", calories: 15, protein: 0.6, carbs: 3.6, fat: 0.1, portion_g: 100 },
-  { name: "Lechuga", calories: 15, protein: 1.4, carbs: 2.9, fat: 0.2, portion_g: 100 },
+  { name: "Lechuga", calories: 15, protein: 1.4, carbs: 2.9, fat: 0.2, region: "Ecuador" },
   { name: "Cebolla paiteña / roja", calories: 40, protein: 1.1, carbs: 9.3, fat: 0.1, portion_g: 100 },
   { name: "Piña fresca", calories: 50, protein: 0.5, carbs: 13.0, fat: 0.1, portion_g: 100 },
   { name: "Plátano / Guineo maduro", calories: 89, protein: 1.1, carbs: 22.8, fat: 0.3, portion_g: 100 },
@@ -2790,7 +2792,6 @@ let selectedSearchPortion = 100;
 
 // Initialize Calorie Tracker
 function initCalorieTracker() {
-  // Load goal
   const savedGoal = localStorage.getItem("calorie_goal");
   if (savedGoal) {
     calorieGoal = parseInt(savedGoal);
@@ -2798,13 +2799,15 @@ function initCalorieTracker() {
     if (goalInput) goalInput.value = calorieGoal;
   }
   
-  // Load foods
   const savedFoods = localStorage.getItem("logged_foods");
   if (savedFoods) {
-    loggedFoods = JSON.parse(savedFoods);
+    try {
+      loggedFoods = JSON.parse(savedFoods);
+    } catch(e) {
+      loggedFoods = [];
+    }
   }
   
-  // Load API Key
   const apiKey = localStorage.getItem("openai_api_key");
   const apiKeyInput = document.getElementById("openaiApiKeyInput");
   if (apiKey && apiKeyInput) {
@@ -2849,13 +2852,13 @@ function updateCalorieDashboard() {
   let totalFat = 0;
   
   loggedFoods.forEach(food => {
-    totalCal += food.calories;
-    totalProt += food.protein_g;
-    totalCarb += food.carbs_g;
-    totalFat += food.fat_g;
+    // Parse to ensure numeric operations (Prevent JS String Concatenation Bug)
+    totalCal += parseFloat(food.calories) || 0;
+    totalProt += parseFloat(food.protein_g !== undefined ? food.protein_g : (food.protein !== undefined ? food.protein : 0)) || 0;
+    totalCarb += parseFloat(food.carbs_g !== undefined ? food.carbs_g : (food.carbs !== undefined ? food.carbs : 0)) || 0;
+    totalFat += parseFloat(food.fat_g !== undefined ? food.fat_g : (food.fat !== undefined ? food.fat : 0)) || 0;
   });
   
-  // Update numbers
   const countText = document.getElementById("calorieCircleText");
   const dashboardText = document.getElementById("calorieCountText");
   const loggedTotalCalText = document.getElementById("loggedTotalCal");
@@ -2864,14 +2867,12 @@ function updateCalorieDashboard() {
   if (dashboardText) dashboardText.textContent = Math.round(totalCal).toLocaleString();
   if (loggedTotalCalText) loggedTotalCalText.textContent = Math.round(totalCal);
   
-  // Sync the dashboard main page text
   const mainGoalInput = document.getElementById("calorieGoalInput");
   if (mainGoalInput) mainGoalInput.value = calorieGoal;
   
   const mainGoalText = document.querySelector("#calorieCountText + span");
   if (mainGoalText) mainGoalText.textContent = `/ ${calorieGoal} kcal`;
   
-  // Dashboard circle progress ring
   const circle = document.getElementById("calorieCircleProgress");
   if (circle) {
     const r = 54;
@@ -2881,7 +2882,6 @@ function updateCalorieDashboard() {
     circle.style.strokeDashoffset = offset;
   }
   
-  // Summary status text
   const statusSummary = document.getElementById("calorieStatusSummary");
   if (statusSummary) {
     const diff = calorieGoal - totalCal;
@@ -2894,14 +2894,12 @@ function updateCalorieDashboard() {
     }
   }
   
-  // Sync dashboard page progress bar
   const mainProgressBar = document.getElementById("calorieProgressBar");
   if (mainProgressBar) {
     const mainPercent = Math.min((totalCal / calorieGoal) * 100, 100);
     mainProgressBar.style.width = mainPercent + '%';
   }
   
-  // Macros breakdown progress bars
   const protText = document.getElementById("macroProtText");
   const carbText = document.getElementById("macroCarbText");
   const fatText = document.getElementById("macroFatText");
@@ -2914,7 +2912,6 @@ function updateCalorieDashboard() {
   if (carbText) carbText.textContent = `${Math.round(totalCarb)}g`;
   if (fatText) fatText.textContent = `${Math.round(totalFat)}g`;
   
-  // Adjust macros bar percentage relative to their goals (e.g. prot 145g, carb 180g, fat 65g)
   if (protBar) protBar.style.width = Math.min((totalProt / 145) * 100, 100) + '%';
   if (carbBar) carbBar.style.width = Math.min((totalCarb / 180) * 100, 100) + '%';
   if (fatBar) fatBar.style.width = Math.min((totalFat / 65) * 100, 100) + '%';
@@ -2949,11 +2946,21 @@ function renderFoodLog() {
 
 // Add Food Item
 function addFoodItem(food) {
-  loggedFoods.push(food);
+  // Normalize and parse keys to prevent missing macro calculations
+  const normalized = {
+    name: food.name || "Alimento",
+    portion_estimate_g: parseFloat(food.portion_estimate_g) || 100,
+    calories: parseFloat(food.calories) || 0,
+    protein_g: parseFloat(food.protein_g !== undefined ? food.protein_g : (food.protein !== undefined ? food.protein : 0)) || 0,
+    carbs_g: parseFloat(food.carbs_g !== undefined ? food.carbs_g : (food.carbs !== undefined ? food.carbs : 0)) || 0,
+    fat_g: parseFloat(food.fat_g !== undefined ? food.fat_g : (food.fat !== undefined ? food.fat : 0)) || 0
+  };
+  
+  loggedFoods.push(normalized);
   localStorage.setItem("logged_foods", JSON.stringify(loggedFoods));
   renderFoodLog();
   updateCalorieDashboard();
-  showToast(`✅ Agregado: ${Math.round(food.calories)} kcal (${food.name})`);
+  showToast(`✅ Agregado: ${Math.round(normalized.calories)} kcal (${normalized.name})`);
 }
 
 // Delete Food Item
@@ -2982,15 +2989,52 @@ function switchNutriMode(mode) {
   document.getElementById("nutriMode-text").classList.add("hidden");
   document.getElementById("nutriMode-search").classList.add("hidden");
   
-  document.getElementById("btnNutriMode-photo").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-850 text-slate-450 hover:text-white transition-all";
-  document.getElementById("btnNutriMode-text").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-855 text-slate-450 hover:text-white transition-all";
-  document.getElementById("btnNutriMode-search").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-855 text-slate-450 hover:text-white transition-all";
+  document.getElementById("btnNutriMode-photo").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-850 text-slate-455 hover:text-white transition-all";
+  document.getElementById("btnNutriMode-text").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-855 text-slate-455 hover:text-white transition-all";
+  document.getElementById("btnNutriMode-search").className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-855 text-slate-455 hover:text-white transition-all";
   
   document.getElementById("nutriMode-" + mode).classList.remove("hidden");
   document.getElementById("btnNutriMode-" + mode).className = "flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-sky-500/20 bg-sky-500/5 text-sky-400 transition-all";
 }
 
-// Mode 1: AI PHOTO DEDUCTION (Vision API with mock fallback if no Key)
+// Smart Offline Text Parsing Fallback
+function parseTextDescriptionLocally(text) {
+  const clean = text.toLowerCase();
+  const words = clean.split(/[\s,.;()]+/);
+  let estimatedItems = [];
+  
+  // Search for matches in local database
+  localFoodsDb.forEach(food => {
+    const foodKeywords = food.name.toLowerCase().split(/[\s()]+/);
+    const matches = foodKeywords.filter(keyword => {
+      if (keyword.length < 3) return false;
+      return words.some(word => word.startsWith(keyword) || keyword.startsWith(word));
+    });
+    
+    // Check match significance
+    if (matches.length >= 1) {
+      // Check if we already logged a similar item
+      const baseName = food.name.split(" ")[0].toLowerCase();
+      if (!estimatedItems.some(i => i.name.toLowerCase().startsWith(baseName))) {
+        estimatedItems.push({
+          name: food.name + " (Estimado Local)",
+          portion_estimate_g: 100,
+          calories: food.calories,
+          protein_g: food.protein,
+          carbs_g: food.carbs,
+          fat_g: food.fat
+        });
+      }
+    }
+  });
+  
+  if (estimatedItems.length > 0) {
+    return { items: estimatedItems };
+  }
+  return null;
+}
+
+// Mode 1: AI PHOTO DEDUCTION (Vision API with mock/local fallback)
 function startAiScan() {
   const fileInput = document.getElementById("aiPhotoInput");
   if (fileInput.files.length === 0) return;
@@ -3006,38 +3050,37 @@ function startAiScan() {
     const apiKey = localStorage.getItem("openai_api_key");
     
     if (apiKey) {
-      // Connect to OpenAI API
+      // API call using gpt-4o-mini (highly compatible and fast)
       const result = await analyzeFoodWithOpenAi(base64Data);
       if (spinner) spinner.classList.add("hidden");
+      
       if (result && result.items) {
         result.items.forEach(item => {
-          addFoodItem({
-            name: item.name,
-            portion_estimate_g: item.portion_estimate_g,
-            calories: item.calories,
-            protein_g: item.protein_g,
-            carbs_g: item.carbs_g,
-            fat_g: item.fat_g
-          });
+          addFoodItem(item);
         });
+      } else {
+        alert("La IA de OpenAI falló. Se usará una simulación local.");
+        runPhotoFallback();
       }
     } else {
-      // Mock Fallback
       setTimeout(() => {
         if (spinner) spinner.classList.add("hidden");
-        // Add random common Ecuadorian plate
-        const plates = [
-          { name: "Pollo con arroz y aguacate (Estimado)", portion_estimate_g: 350, calories: 540, protein_g: 34, carbs_g: 58, fat_g: 18 },
-          { name: "Encebollado de pescado con chifles (Estimado)", portion_estimate_g: 400, calories: 420, protein_g: 28, carbs_g: 45, fat_g: 8 },
-          { name: "Huevo frito con yuca cocida (Estimado)", portion_estimate_g: 220, calories: 356, protein_g: 15, carbs_g: 39, fat_g: 16 }
-        ];
-        const selected = plates[Math.floor(Math.random() * plates.length)];
-        addFoodItem(selected);
-        showToast("⚠️ Sin API Key: Ejecutando simulación");
+        runPhotoFallback();
       }, 2200);
     }
     fileInput.value = "";
   };
+}
+
+function runPhotoFallback() {
+  const plates = [
+    { name: "Pechuga de pollo con arroz blanco y aguacate (Simulación)", portion_estimate_g: 350, calories: 540, protein_g: 35, carbs_g: 56, fat_g: 17 },
+    { name: "Encebollado de pescado con porción de yuca (Simulación)", portion_estimate_g: 400, calories: 420, protein_g: 28, carbs_g: 42, fat_g: 8 },
+    { name: "Huevo frito con plátano maduro frito (Simulación)", portion_estimate_g: 220, calories: 448, protein_g: 15, carbs_g: 33, fat_g: 28 }
+  ];
+  const selected = plates[Math.floor(Math.random() * plates.length)];
+  addFoodItem(selected);
+  showToast("⚠️ Simulación cargada (Ingresa tu API Key en ajustes para fotos reales)");
 }
 
 async function analyzeFoodWithOpenAi(base64Data) {
@@ -3045,7 +3088,7 @@ async function analyzeFoodWithOpenAi(base64Data) {
   const prompt = "Analiza esta imagen de comida. Identifica CADA alimento visible y proporciona en formato JSON estricto: {items: [{name, portion_estimate_g, calories, protein_g, carbs_g, fat_g}], totals: {calories, protein_g, carbs_g, fat_g}, confidence: 'high/medium/low', notes: string}. Estima las porciones visualmente sin báscula.";
   
   const payload = {
-    model: "gpt-4o",
+    model: "gpt-4o-mini", // Changed to gpt-4o-mini for maximum compatibility and vision support
     response_format: { type: "json_object" },
     messages: [
       {
@@ -3072,32 +3115,28 @@ async function analyzeFoodWithOpenAi(base64Data) {
       },
       body: JSON.stringify(payload)
     });
-    
-    if (!response.ok) throw new Error("Error en servidor OpenAI.");
+    if (!response.ok) return null;
     const data = await response.json();
     return JSON.parse(data.choices[0].message.content);
   } catch (err) {
     console.error(err);
-    alert("Error conectando con OpenAI API. Revisa tu API Key.");
     return null;
   }
 }
 
-// Mode 2: AI TEXT DESCRIPTION
+// Mode 2: AI TEXT DESCRIPTION (With local smart database fallback)
 async function analyzeFoodText() {
   const descInput = document.getElementById("foodTextDescription");
   const desc = descInput.value.trim();
   if (!desc) {
-    alert("Por favor describe lo que comiste.");
+    alert("Describe tu plato antes de analizar.");
     return;
   }
   
   const apiKey = localStorage.getItem("openai_api_key");
-  
-  // Show loading indicator
   const btn = document.querySelector("#nutriMode-text button");
   const originalHtml = btn.innerHTML;
-  btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Procesando...`;
+  btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Analizando...`;
   btn.disabled = true;
   
   if (apiKey) {
@@ -3126,44 +3165,51 @@ async function analyzeFoodText() {
         const result = JSON.parse(data.choices[0].message.content);
         if (result && result.items) {
           result.items.forEach(item => {
-            addFoodItem({
-              name: item.name,
-              portion_estimate_g: item.portion_estimate_g,
-              calories: item.calories,
-              protein_g: item.protein_g,
-              carbs_g: item.carbs_g,
-              fat_g: item.fat_g
-            });
+            addFoodItem(item);
           });
           descInput.value = "";
+        } else {
+          runTextFallback(desc);
         }
       } else {
-        throw new Error("Respuesta errónea del servidor.");
+        runTextFallback(desc);
       }
     } catch (err) {
       console.error(err);
       btn.innerHTML = originalHtml;
       btn.disabled = false;
-      alert("Error llamando a la API de OpenAI. Valida tu API Key.");
+      runTextFallback(desc);
     }
   } else {
-    // Mock simulation
     setTimeout(() => {
       btn.innerHTML = originalHtml;
       btn.disabled = false;
-      // Parse description roughly or just add a general estimation
-      addFoodItem({
-        name: desc.length > 30 ? desc.substring(0, 27) + "..." : desc,
-        portion_estimate_g: 150,
-        calories: 380,
-        protein_g: 22,
-        carbs_g: 40,
-        fat_g: 12
-      });
-      showToast("⚠️ Sin API Key: Ejecutando simulación");
-      descInput.value = "";
-    }, 1800);
+      runTextFallback(desc);
+    }, 1200);
   }
+}
+
+function runTextFallback(desc) {
+  // Use smart local text parser database fallback
+  const localResult = parseTextDescriptionLocally(desc);
+  if (localResult && localResult.items) {
+    localResult.items.forEach(item => {
+      addFoodItem(item);
+    });
+    showToast("⚡ Estimación de base de datos local aplicada");
+  } else {
+    // If no food matches found in local DB
+    addFoodItem({
+      name: desc.length > 25 ? desc.substring(0, 22) + "..." : desc,
+      portion_estimate_g: 150,
+      calories: 380,
+      protein_g: 20,
+      carbs_g: 45,
+      fat_g: 12
+    });
+    showToast("⚠️ Comida genérica registrada (Ingresa tu API Key en ajustes)");
+  }
+  document.getElementById("foodTextDescription").value = "";
 }
 
 // Mode 3: OFFLINE SEARCH FOR COMMON FOODS
@@ -3180,9 +3226,7 @@ function searchLocalFoods(query) {
   }
   
   container.innerHTML = "";
-  // Show top 6 matches
   results.slice(0, 8).forEach(food => {
-    // Calculate values based on selected portion size
     const factor = selectedSearchPortion / 100;
     const cal = Math.round(food.calories * factor);
     const prot = Math.round(food.protein * factor * 10) / 10;
@@ -3229,6 +3273,7 @@ function logMeal(calories, name, grams=150, prot=20, carb=35, fat=10) {
     fat_g: fat
   });
 }
+
 
 // Calories Progress Logic
 let currentCalories = 0;
