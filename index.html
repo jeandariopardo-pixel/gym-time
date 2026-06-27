@@ -22,8 +22,8 @@
           },
           colors: {
             slate: {
-              950: '#070a13',
-              900: '#0e1526',
+              950: '#080c12',
+              900: '#0f1520',
               800: '#172237',
               750: '#1e2d4a',
               700: '#253554',
@@ -159,6 +159,16 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
 
+
+    #restTimer {
+      letter-spacing: -2px !important;
+      font-weight: 900 !important;
+      font-variant-numeric: tabular-nums !important;
+    }
+    .timer-blue { color: #38bdf8 !important; }
+    .timer-amber { color: #f59e0b !important; }
+    .timer-green { color: #10b981 !important; }
+
     /* 3D Muscle Glowing Gradients */
     .hover-glow-sky:hover {
       box-shadow: 0 10px 30px -5px rgba(56, 189, 248, 0.25);
@@ -190,8 +200,36 @@
       border-color: rgba(6, 182, 212, 0.4) !important;
       transform: translateY(-2px);
     }
+
+    /* Bottom Navigation Active Tab Enhancements */
+    .tab-btn.active {
+      background-color: rgba(56, 189, 248, 0.08) !important;
+      border-radius: 16px !important;
+      position: relative !important;
+    }
+    .tab-btn.active::after {
+      content: '' !important;
+      position: absolute !important;
+      bottom: 6px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: 4px !important;
+      height: 4px !important;
+      border-radius: 9999px !important;
+      background-color: #38bdf8 !important;
+      box-shadow: 0 0 8px #38bdf8 !important;
+    }
+    .tab-btn span {
+      font-size: 1.4rem !important;
+    }
+
     .exercise-card-transition {
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      border-width: 1.5px !important;
+    }
+    .exercise-card-transition:hover {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.4) !important;
     }
 
     /* Custom check-box styling */
@@ -640,7 +678,7 @@
               <button onclick="showExercisePage(\'rodillas\')" class="flex-1 min-h-[48px] py-3 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-xl text-xs font-bold border border-sky-500/20 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 🔍 Ficha Completa
               </button>
-              <button onclick="startTimer(15)" class="flex-1 min-h-[48px] py-3 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
+              <button onclick="startTimer(15)" class="flex-1 min-h-[48px] py-4 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl text-sm font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 ⏳ Descanso (15s)
               </button>
             </div>
@@ -713,7 +751,7 @@
               <button onclick="showExercisePage('glute-bridge')" class="flex-1 py-2 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-xl text-xs font-bold border border-sky-500/20 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 🔍 Ficha Completa
               </button>
-              <button onclick="startTimer(15)" class="flex-1 min-h-[48px] py-3 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
+              <button onclick="startTimer(15)" class="flex-1 min-h-[48px] py-4 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl text-sm font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 ⏳ Descanso (15s)
               </button>
             </div>
@@ -764,7 +802,7 @@
               <button onclick="showExercisePage('dead-bug')" class="flex-1 py-2 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-xl text-xs font-bold border border-sky-500/20 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 🔍 Ficha Completa
               </button>
-              <button onclick="startTimer(30)" class="flex-1 min-h-[48px] py-3 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
+              <button onclick="startTimer(30)" class="flex-1 min-h-[48px] py-4 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl text-sm font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 ⏳ Descanso (30s)
               </button>
             </div>
@@ -815,7 +853,7 @@
               <button onclick="showExercisePage('bird-dog')" class="flex-1 py-2 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-xl text-xs font-bold border border-sky-500/20 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 🔍 Ficha Completa
               </button>
-              <button onclick="startTimer(30)" class="flex-1 min-h-[48px] py-3 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
+              <button onclick="startTimer(30)" class="flex-1 min-h-[48px] py-4 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl text-sm font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 ⏳ Descanso (30s)
               </button>
             </div>
@@ -863,7 +901,7 @@
               <button onclick="showExercisePage(\'rotacion\')" class="flex-1 min-h-[48px] py-3 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-xl text-xs font-bold border border-sky-500/20 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 🔍 Ficha Completa
               </button>
-              <button onclick="startTimer(15)" class="flex-1 min-h-[48px] py-3 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
+              <button onclick="startTimer(15)" class="flex-1 min-h-[48px] py-4 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl text-sm font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 ⏳ Descanso (15s)
               </button>
             </div>
@@ -910,7 +948,7 @@
               <button onclick="showExercisePage(\'clamshell\')" class="flex-1 min-h-[48px] py-3 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-xl text-xs font-bold border border-sky-500/20 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 🔍 Ficha Completa
               </button>
-              <button onclick="startTimer(15)" class="flex-1 min-h-[48px] py-3 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
+              <button onclick="startTimer(15)" class="flex-1 min-h-[48px] py-4 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl text-sm font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 ⏳ Descanso (15s)
               </button>
             </div>
@@ -959,7 +997,7 @@
               <button onclick="showExercisePage(\'esfinge\')" class="flex-1 min-h-[48px] py-3 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-xl text-xs font-bold border border-sky-500/20 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 🔍 Ficha Completa
               </button>
-              <button onclick="startTimer(20)" class="flex-1 min-h-[48px] py-3 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
+              <button onclick="startTimer(20)" class="flex-1 min-h-[48px] py-4 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl text-sm font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 ⏳ Descanso (20s)
               </button>
             </div>
@@ -1008,7 +1046,7 @@
               <button onclick="showExercisePage(\'plancha\')" class="flex-1 min-h-[48px] py-3 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 rounded-xl text-xs font-bold border border-sky-500/20 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 🔍 Ficha Completa
               </button>
-              <button onclick="startTimer(30)" class="flex-1 min-h-[48px] py-3 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-xl text-xs font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
+              <button onclick="startTimer(30)" class="flex-1 min-h-[48px] py-4 px-3 bg-slate-800 hover:bg-slate-750 text-slate-300 rounded-2xl text-sm font-bold border border-slate-700 transition-all text-center flex items-center justify-center gap-1.5 active:scale-95">
                 ⏳ Descanso (30s)
               </button>
             </div>
@@ -2179,7 +2217,7 @@
   </div>
   <div>
     <span class="text-[9px] text-slate-450 font-bold uppercase tracking-wider block">Descanso</span>
-    <span id="restTimer" class="text-xl font-extrabold text-sky-450 tracking-wider">00:45</span>
+    <span id="restTimer" class="text-5xl font-sans font-black tracking-tighter tabular-nums transition-colors duration-300">00:45</span>
   </div>
   <div class="flex items-center gap-1 ml-2">
     <button onclick="startTimer(45)" class="w-8 h-8 rounded-xl bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center transition-all duration-200 active:scale-95 shadow-md shadow-sky-500/20 text-xs">
@@ -3348,7 +3386,7 @@ function startAiScan() {
 function showToast(message) {
   const container = document.getElementById('toastContainer') || createToastContainer();
   const toast = document.createElement('div');
-  toast.className = "bg-slate-900/95 border border-emerald-500/40 text-white rounded-2xl p-4 shadow-2xl flex items-center gap-3 animate-toast max-w-sm pointer-events-auto backdrop-blur-md";
+  toast.className = "bg-slate-900/95 border border-emerald-500/40 border-l-4 border-l-sky-400 text-white rounded-2xl p-4 shadow-2xl flex items-center gap-3 animate-toast max-w-sm pointer-events-auto backdrop-blur-md";
   toast.innerHTML = `
     <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-450 border border-emerald-500/20 flex items-center justify-center text-sm flex-shrink-0">✓</div>
     <span class="text-xs font-bold text-slate-100">${message}</span>
@@ -3381,7 +3419,12 @@ function startTimer(sec){
   clearInterval(timerInterval);
   timerRemaining = sec;
   const el = document.getElementById('restTimer');
-  if (el) el.textContent = formatTime(timerRemaining);
+  if (el) {
+    el.textContent = formatTime(timerRemaining);
+    el.classList.remove('timer-blue', 'timer-amber', 'timer-green');
+    if (timerRemaining <= 10) el.classList.add('timer-amber');
+    else el.classList.add('timer-blue');
+  }
   
   // Slide up timer if hidden
   const timerToast = document.getElementById('globalTimerToast');
@@ -3393,9 +3436,20 @@ function startTimer(sec){
   timerInterval = setInterval(() => {
     timerRemaining--;
     if (el) el.textContent = formatTime(Math.max(timerRemaining,0));
+    
+    if (el) {
+      el.classList.remove('timer-blue', 'timer-amber', 'timer-green');
+      if (timerRemaining <= 0) {
+        el.classList.add('timer-green');
+      } else if (timerRemaining <= 10) {
+        el.classList.add('timer-amber');
+      } else {
+        el.classList.add('timer-blue');
+      }
+    }
+    
     if (timerRemaining <= 0) {
       clearInterval(timerInterval);
-      // Play a subtle vibration or sound if supported
       if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
     }
   }, 1000);
