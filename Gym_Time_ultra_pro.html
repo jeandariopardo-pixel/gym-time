@@ -1006,350 +1006,246 @@
 
       </div>
 
-        <!-- 2. NUTRICKER SUBTAB (NUTRITION NESTED) -->
-        <div id="tab-nutricion" class="section space-y-6">
-        
-        <div class="flex items-center justify-between border-b border-slate-900 pb-3 flex-wrap gap-4">
-          <p class="section-title text-xl font-extrabold text-white font-display flex items-center gap-2">
-            <span>🥗</span> Plan Nutricional
-          </p>
-          <button onclick="window.print()" class="print-btn flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-xl text-xs font-bold border border-slate-800 transition-all duration-200 shadow-md active:scale-95">
-            <span>🖨️</span> Imprimir Plan
-          </button>
-        </div>
-        
-        <!-- Target Calories Header Card -->
-        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl space-y-4">
-          <h3 class="text-xs font-bold text-slate-450 uppercase tracking-wider mb-2 flex items-center gap-2">
-            <span>📊</span> Tu Meta Calórica Diaria
-          </h3>
-          <div class="grid grid-cols-3 gap-4">
-            <div class="bg-slate-950 border border-slate-900 rounded-2xl p-4 text-center">
-              <span class="text-2xl md:text-3xl font-extrabold text-white font-display block">1,850</span>
-              <span class="text-[9px] text-slate-450 font-bold uppercase tracking-wider block mt-1">kcal/día</span>
-            </div>
-            <div class="bg-slate-950 border border-slate-900 rounded-2xl p-4 text-center">
-              <span class="text-2xl md:text-3xl font-extrabold text-sky-400 font-display block">145g</span>
-              <span class="text-[9px] text-slate-450 font-bold uppercase tracking-wider block mt-1">Proteína</span>
-            </div>
-            <div class="bg-slate-950 border border-slate-900 rounded-2xl p-4 text-center">
-              <span class="text-2xl md:text-3xl font-extrabold text-rose-450 font-display block">-400</span>
-              <span class="text-[9px] text-slate-450 font-bold uppercase tracking-wider block mt-1">kcal déficit</span>
-            </div>
-          </div>
-          <p class="text-xs text-slate-350 leading-relaxed pt-2">
-            Con este déficit moderado bajarás ~0.5 kg/semana de forma segura sin perder músculo. La proteína alta protege la masa muscular mientras bajas de peso.
-          </p>
-        </div>
-        
-        <!-- Nutrition Switcher -->
-        <div class="toggle-contexto flex bg-slate-900/60 p-1.5 rounded-2xl border border-slate-900 max-w-md mx-auto">
-          <button class="toggle-btn active flex-1 py-3 px-4 rounded-xl text-xs font-extrabold text-slate-350 hover:text-white transition-all duration-200" onclick="toggleNutri('quito_n', this)">
-            🏠 Casa (cocina propia)
-          </button>
-          <button class="toggle-btn flex-1 py-3 px-4 rounded-xl text-xs font-extrabold text-slate-350 hover:text-white transition-all duration-200" onclick="toggleNutri('mina_n', this)">
-            🏔️ Mina (comedor)
-          </button>
-        </div>
-        
-        <!-- ==================== NUTRICIÓN QUITO -->
-        <div id="ctx-quito_n" class="space-y-6">
-          <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl space-y-6">
-            <h3 class="text-sm font-extrabold text-white font-display border-b border-slate-800 pb-3 flex items-center gap-2 uppercase tracking-wide">
-              <span>📅</span> Menú Tipo — Casa
-            </h3>
-            
-            <div class="space-y-4">
-              <!-- Desayuno -->
-              <div class="bg-slate-950/40 border-l-4 border-amber-500 border-y border-r border-slate-900/80 rounded-r-2xl p-5 hover:bg-slate-900/80 transition-colors">
-                <div class="flex justify-between items-center flex-wrap gap-2 mb-3">
-                  <div class="flex items-center gap-2.5">
-                    <span class="text-lg">🌅</span>
-                    <span class="text-sm font-bold text-white">Desayuno · 7:00 AM</span>
-                  </div>
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/10 text-amber-400 border border-amber-500/20">~500 kcal · 35g prot</span>
-                </div>
-                <div class="space-y-2 text-xs text-slate-350">
-                  <p class="flex items-start gap-2"><span class="text-amber-500">•</span> 2 huevos revueltos con tomate y cebolla (aceite de oliva 1 cdta)</p>
-                  <p class="flex items-start gap-2"><span class="text-amber-500">•</span> Avena cocida 60g con canela y stevia</p>
-                  <p class="flex items-start gap-2"><span class="text-amber-500">•</span> 1 manzana o pera mediana</p>
-                  <p class="flex items-start gap-2"><span class="text-amber-500">•</span> Café negro o té sin azúcar</p>
-                </div>
-              </div>
-              
-              <!-- Almuerzo -->
-              <div class="bg-slate-950/40 border-l-4 border-emerald-500 border-y border-r border-slate-900/80 rounded-r-2xl p-5 hover:bg-slate-900/80 transition-colors">
-                <div class="flex justify-between items-center flex-wrap gap-2 mb-3">
-                  <div class="flex items-center gap-2.5">
-                    <span class="text-lg">☀️</span>
-                    <span class="text-sm font-bold text-white">Almuerzo · 12:30 PM</span>
-                  </div>
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">~600 kcal · 45g prot</span>
-                </div>
-                <div class="space-y-2 text-xs text-slate-350">
-                  <p class="flex items-start gap-2"><span class="text-emerald-500">•</span> Pechuga de pollo a la plancha 160g (sin piel)</p>
-                  <p class="flex items-start gap-2"><span class="text-emerald-500">•</span> Arroz integral cocido 80g</p>
-                  <p class="flex items-start gap-2"><span class="text-emerald-500">•</span> Ensalada grande: lechuga, tomate, pepino, zanahoria + limón</p>
-                  <p class="flex items-start gap-2"><span class="text-emerald-500">•</span> Aguacate 40g (½ pequeño)</p>
-                </div>
-              </div>
-              
-              <!-- Merienda -->
-              <div class="bg-slate-950/40 border-l-4 border-sky-500 border-y border-r border-slate-900/80 rounded-r-2xl p-5 hover:bg-slate-900/80 transition-colors">
-                <div class="flex justify-between items-center flex-wrap gap-2 mb-3">
-                  <div class="flex items-center gap-2.5">
-                    <span class="text-lg">🍎</span>
-                    <span class="text-sm font-bold text-white">Merienda · 15:30 PM</span>
-                  </div>
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-sky-500/10 text-sky-400 border border-sky-500/20">~200 kcal · 15g prot</span>
-                </div>
-                <div class="space-y-2 text-xs text-slate-350">
-                  <p class="flex items-start gap-2"><span class="text-sky-500">•</span> Yogur griego natural sin azúcar 150g</p>
-                  <p class="flex items-start gap-2"><span class="text-sky-500">•</span> Almendras o nueces 20g (un puñado pequeño)</p>
-                </div>
-              </div>
-              
-              <!-- Cena -->
-              <div class="bg-slate-950/40 border-l-4 border-violet-500 border-y border-r border-slate-900/80 rounded-r-2xl p-5 hover:bg-slate-900/80 transition-colors">
-                <div class="flex justify-between items-center flex-wrap gap-2 mb-3">
-                  <div class="flex items-center gap-2.5">
-                    <span class="text-lg">🌙</span>
-                    <span class="text-sm font-bold text-white">Cena · 19:00 PM</span>
-                  </div>
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-violet-500/10 text-violet-400 border border-violet-500/20">~550 kcal · 42g prot</span>
-                </div>
-                <div class="space-y-2 text-xs text-slate-350">
-                  <p class="flex items-start gap-2"><span class="text-violet-500">•</span> Pescado blanco (tilapia/trucha) al horno 160g</p>
-                  <p class="flex items-start gap-2"><span class="text-violet-500">•</span> Batata cocida 150g o papa con cáscara</p>
-                  <p class="flex items-start gap-2"><span class="text-violet-500">•</span> Brócoli o espinaca al vapor 200g</p>
-                  <p class="flex items-start gap-2"><span class="text-violet-500">•</span> Aceite de oliva 1 cdta para cocinar</p>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Total Banner -->
-            <div class="bg-gradient-to-r from-sky-500/10 to-indigo-500/10 border border-sky-500/20 rounded-2xl p-4 text-center mt-6">
-              <div class="text-sm md:text-base font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-300">
-                TOTAL: ~1,850 kcal · ~137g proteína · 3L agua
-              </div>
-            </div>
-          </div>
-          
-          <!-- Casa Alternatives -->
-          <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl space-y-5">
-            <h3 class="text-sm font-extrabold text-white font-display border-b border-slate-800 pb-3 flex items-center gap-2 uppercase tracking-wide">
-              <span>🔄</span> Alternativas Semanales (Casa)
-            </h3>
-            <p class="text-xs text-slate-400">Rota estas opciones para no aburrirte:</p>
-            
-            <div class="space-y-4">
-              <div class="bg-slate-950 p-4 rounded-2xl border border-slate-900">
-                <span class="block text-xs font-bold text-sky-400 uppercase tracking-wider mb-2">Proteínas (intercambia a diario):</span>
-                <p class="text-xs text-slate-300 leading-relaxed">Pollo · Pescado blanco · Atún en agua · Huevos · Lenteja/fréjol (2x/semana) · Carne magra de res (1x/semana)</p>
-              </div>
-              <div class="bg-slate-950 p-4 rounded-2xl border border-slate-900">
-                <span class="block text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">Carbohidratos (elige 1 por comida):</span>
-                <p class="text-xs text-slate-300 leading-relaxed">Arroz integral · Quinua · Batata · Papa con cáscara · Yuca cocida · Plátano verde cocido</p>
-              </div>
-              <div class="bg-slate-950 p-4 rounded-2xl border border-slate-900">
-                <span class="block text-xs font-bold text-amber-500 uppercase tracking-wider mb-2">Verduras (come libremente):</span>
-                <p class="text-xs text-slate-300 leading-relaxed">Brócoli · Espinaca · Lechuga · Tomate · Pepino · Zanahoria · Cebolla · Pimiento · Coliflor · Acelga</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- ==================== NUTRICIÓN MINA -->
-        <div id="ctx-mina_n" class="space-y-6" style="display:none">
-          <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl space-y-6">
-            <div class="border-b border-slate-800 pb-3">
-              <h3 class="text-sm font-extrabold text-white font-display flex items-center gap-2 uppercase tracking-wide">
-                <span>🏔️</span> Estrategia en el Comedor de Mina
-              </h3>
-              <p class="text-xs text-slate-400 mt-1">No controlas lo que preparan, pero SÍ controlas <strong>qué eliges y en qué cantidad</strong>. Reglas de oro:</p>
-            </div>
-            
-            <div class="space-y-4">
-              <!-- Desayuno -->
-              <div class="bg-slate-950/40 border-l-4 border-amber-500 border-y border-r border-slate-900/80 rounded-r-2xl p-5 hover:bg-slate-900/80 transition-colors">
-                <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
-                  <span class="text-sm font-bold text-white flex items-center gap-2">🌅 Desayuno</span>
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/10 text-amber-400 border border-amber-500/20">~500 kcal</span>
-                </div>
-                <div class="space-y-1.5 text-xs text-slate-350">
-                  <p><strong>PRIORIZA:</strong> Huevos (revueltos/cocidos/fritos con poco aceite) · Avena · Fruta fresca · Café negro</p>
-                  <p><strong>EVITA:</strong> Pan blanco en exceso · Jugos azucarados · Embutidos</p>
-                  <p class="text-[10px] text-slate-450 italic">Si hay opciones: elige 2-3 huevos + avena o fruta. No combines pan + arroz + yuca</p>
-                </div>
-              </div>
-              
-              <!-- Almuerzo -->
-              <div class="bg-slate-950/40 border-l-4 border-emerald-500 border-y border-r border-slate-900/80 rounded-r-2xl p-5 hover:bg-slate-900/80 transition-colors">
-                <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
-                  <span class="text-sm font-bold text-white flex items-center gap-2">☀️ Almuerzo (comida fuerte)</span>
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">~700 kcal</span>
-                </div>
-                <div class="space-y-1.5 text-xs text-slate-350">
-                  <p><strong>SIEMPRE elige:</strong> La proteína más magra disponible (pollo > pescado > res magra > cerdo)</p>
-                  <p><strong>Un carbohidrato:</strong> Arroz O papa O yuca — no los tres juntos</p>
-                  <p><strong>Llena el plato:</strong> La mayor parte debe ser ensalada o verdura cocida</p>
-                  <p><strong>Sopa:</strong> Sí si es de verduras/menestra. No si es crema con crema/queso</p>
-                </div>
-              </div>
-              
-              <!-- Merienda -->
-              <div class="bg-slate-950/40 border-l-4 border-sky-500 border-y border-r border-slate-900/80 rounded-r-2xl p-5 hover:bg-slate-900/80 transition-colors">
-                <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
-                  <span class="text-sm font-bold text-white flex items-center gap-2">🍎 Merienda (si hay)</span>
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-sky-500/10 text-sky-400 border border-sky-500/20">~150 kcal</span>
-                </div>
-                <div class="space-y-1.5 text-xs text-slate-350">
-                  <p>Fruta · Yogur · Nueces si hay disponibles · Agua</p>
-                </div>
-              </div>
-              
-              <!-- Cena -->
-              <div class="bg-slate-950/40 border-l-4 border-violet-500 border-y border-r border-slate-900/80 rounded-r-2xl p-5 hover:bg-slate-900/80 transition-colors">
-                <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
-                  <span class="text-sm font-bold text-white flex items-center gap-2">🌙 Cena (más ligera)</span>
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-violet-500/10 text-violet-400 border border-violet-500/20">~500 kcal</span>
-                </div>
-                <div class="space-y-1.5 text-xs text-slate-350">
-                  <p>Menor porción de carbohidrato que en el almuerzo</p>
-                  <p>Proteína + mucha verdura</p>
-                  <p class="text-[10px] text-slate-450 italic">Si solo hay opciones pesadas: reduce la cantidad y añade más ensalada</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Mina Survival Guide -->
-          <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl space-y-6">
-            <h3 class="text-sm font-extrabold text-white font-display border-b border-slate-800 pb-3 flex items-center gap-2 uppercase tracking-wide">
-              <span>⚡</span> Reglas de Supervivencia Nutricional en Mina
-            </h3>
-            
-            <div class="space-y-4">
-              <div class="flex items-start gap-4">
-                <span class="w-6 h-6 rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 border border-sky-500/20">1</span>
-                <div>
-                  <h4 class="text-xs font-bold text-white uppercase tracking-wide">Proteína primero:</h4>
-                  <p class="text-xs text-slate-350 mt-1">Siempre empieza llenando tu plato con proteína, luego verdura, luego carbohidrato</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-4">
-                <span class="w-6 h-6 rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 border border-sky-500/20">2</span>
-                <div>
-                  <h4 class="text-xs font-bold text-white uppercase tracking-wide">Un carbohidrato por comida:</h4>
-                  <p class="text-xs text-slate-350 mt-1">Si hay arroz, no tomes también yuca, pan y papa</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-4">
-                <span class="w-6 h-6 rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 border border-sky-500/20">3</span>
-                <div>
-                  <h4 class="text-xs font-bold text-white uppercase tracking-wide">Agua constante:</h4>
-                  <p class="text-xs text-slate-350 mt-1">Lleva tu botella siempre. Mínimo 3L/día en mina (altitud + calor)</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-4">
-                <span class="w-6 h-6 rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 border border-sky-500/20">4</span>
-                <div>
-                  <h4 class="text-xs font-bold text-white uppercase tracking-wide">No te saltes comidas:</h4>
-                  <p class="text-xs text-slate-350 mt-1">Con trabajo físico el metabolismo necesita combustible regular</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-4">
-                <span class="w-6 h-6 rounded-full bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 border border-sky-500/20">5</span>
-                <div>
-                  <h4 class="text-xs font-bold text-white uppercase tracking-wide">Gaseosas y jugos:</h4>
-                  <p class="text-xs text-slate-350 mt-1">Agua o infusión. Los jugos del comedor suelen tener azúcar</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- ==================== ALIMENTOS TRAFFIC LIGHT -->
-        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl space-y-6">
-          <h3 class="text-sm font-extrabold text-white font-display border-b border-slate-800 pb-3 flex items-center gap-2 uppercase tracking-wide">
-            <span>🚦</span> Semáforo de Alimentos
-          </h3>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Green Column -->
-            <div class="bg-emerald-950/10 border border-emerald-500/20 rounded-2xl p-4 flex flex-col justify-between">
-              <div>
-                <span class="px-3 py-1 rounded-xl bg-emerald-500/10 text-emerald-450 text-[10px] font-extrabold uppercase tracking-wider block text-center border border-emerald-500/20 mb-4">
-                  🟢 Comer Libre
-                </span>
-                <div class="space-y-1.5 text-xs text-emerald-300">
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Pollo sin piel</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Pescado blanco</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Huevos</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Atún en agua</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Brócoli</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Espinaca</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Pepino</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Tomate</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Lechuga</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Agua</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Té sin azúcar</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Café negro</span></div>
-                  <div class="bg-emerald-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Limón</span></div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Yellow Column -->
-            <div class="bg-amber-950/10 border border-amber-500/20 rounded-2xl p-4 flex flex-col justify-between">
-              <div>
-                <span class="px-3 py-1 rounded-xl bg-amber-500/10 text-amber-450 text-[10px] font-extrabold uppercase tracking-wider block text-center border border-amber-500/20 mb-4">
-                  🟡 Con Moderación
-                </span>
-                <div class="space-y-1.5 text-xs text-amber-300">
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Arroz integral</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Papa con cáscara</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Yuca cocida</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Plátano</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Pan integral</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Avena</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Fréjol/lenteja</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Aguacate (40g)</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Nueces (20g)</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Aceite oliva</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Queso fresco</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Leche baja grasa</span></div>
-                  <div class="bg-amber-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Yogur natural</span></div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Red Column -->
-            <div class="bg-rose-950/10 border border-rose-500/20 rounded-2xl p-4 flex flex-col justify-between">
-              <div>
-                <span class="px-3 py-1 rounded-xl bg-rose-500/10 text-rose-450 text-[10px] font-extrabold uppercase tracking-wider block text-center border border-rose-500/20 mb-4">
-                  🔴 Evitar
-                </span>
-                <div class="space-y-1.5 text-xs text-rose-350">
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Gaseosas</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Jugos azucarados</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Frituras</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Embutidos</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Pan blanco exceso</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Arroz blanco exceso</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Dulces/pasteles</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Snacks de paquete</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Alcohol frecuente</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Mayonesa exceso</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Fast food</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Azúcar añadida</span></div>
-                  <div class="bg-rose-500/5 py-1.5 px-3 rounded-lg flex items-center justify-between"><span>Manteca/mantequilla</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <!-- ============================================================ TAB: NUTRICIÓN -->
+      <div id="tab-nutricion" class="section space-y-6">
+        
+        <div class="flex items-center justify-between border-b border-slate-900 pb-3 flex-wrap gap-4">
+          <p class="section-title text-xl font-extrabold text-white font-display flex items-center gap-2">
+            <span>🥗</span> Contador de Calorías con IA
+          </p>
+          <button onclick="resetCalories()" class="flex items-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-rose-400 rounded-xl text-xs font-bold border border-slate-800 transition-all duration-200 shadow-md active:scale-95">
+            <span>🔄</span> Reiniciar Día
+          </button>
+        </div>
+
+        <!-- Settings API Key Widget (Collapsible) -->
+        <div class="bg-slate-900/60 border border-slate-900 rounded-3xl p-5 space-y-3">
+          <div class="flex items-center justify-between cursor-pointer" onclick="toggleSettings()">
+            <div class="flex items-center gap-2.5">
+              <span class="text-base">⚙️</span>
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider">Configuración del API de Google Gemini</h4>
+            </div>
+            <span id="settingsArrow" class="text-xs text-slate-400 transition-transform">▼</span>
+          </div>
+          <div id="settingsBody" class="hidden space-y-3 pt-3 border-t border-slate-800/80">
+            <p class="text-[11px] text-slate-400">Ingresa tu API Key de Gemini para habilitar la detección por foto (GPT-4o Vision) y análisis de texto. Los datos se guardan solo en tu navegador (localStorage).</p>
+            <div class="flex gap-2 flex-wrap">
+              <input type="password" id="openaiApiKeyInput" class="flex-1 min-h-[48px] bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-sky-500" placeholder="AIza...">
+              <button onclick="saveApiKey()" class="min-h-[48px] bg-sky-500 hover:bg-sky-600 text-white font-bold px-5 rounded-xl text-xs active:scale-95 transition-all">Guardar Key</button>
+            </div>
+            
+            <!-- Live Diagnostics Log Console -->
+            <div class="mt-4 pt-3 border-t border-slate-800/60 space-y-2">
+              <span class="text-[9px] text-slate-500 font-extrabold uppercase tracking-wider block">Consola de Diagnóstico (Llamadas a la IA)</span>
+              <textarea id="apiDiagnosticsLog" class="w-full bg-slate-950 border border-slate-900 rounded-xl p-3 text-[10px] text-emerald-400 font-mono focus:outline-none h-32 no-scrollbar" readonly placeholder="Esperando interacciones de la IA..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Goal & Macros Circle Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl">
+          <!-- Circular Calorie Progress -->
+          <div class="md:col-span-4 flex flex-col items-center justify-center space-y-3 text-center border-b md:border-b-0 md:border-r border-slate-850 pb-6 md:pb-0 md:pr-6">
+            <div class="relative w-32 h-32 flex items-center justify-center">
+              <svg class="w-full h-full transform -rotate-90">
+                <circle cx="64" cy="64" r="54" stroke="#172237" stroke-width="8" fill="transparent" />
+                <circle id="calorieCircleProgress" cx="64" cy="64" r="54" stroke="#38bdf8" stroke-width="8" fill="transparent"
+                        stroke-dasharray="339.29" stroke-dashoffset="339.29" class="transition-all duration-500" />
+              </svg>
+              <div class="absolute text-center">
+                <span id="calorieCircleText" class="text-2xl font-extrabold text-white block font-display">0</span>
+                <span class="text-[9px] text-slate-455 font-bold uppercase block tracking-wider">kcal</span>
+              </div>
+            </div>
+            <div>
+              <span id="calorieStatusSummary" class="text-xs font-bold text-sky-400">Te faltan 2,000 kcal</span>
+              <div class="flex items-center gap-1.5 mt-1 justify-center">
+                <span class="text-[10px] text-slate-500 font-bold uppercase">Meta:</span>
+                <input type="number" id="calorieGoalInput" value="2000" onchange="updateCalorieGoal(this.value)" class="w-16 bg-slate-950 border border-slate-850 rounded px-1 text-center text-xs font-bold text-white focus:outline-none focus:border-sky-500">
+              </div>
+            </div>
+          </div>
+
+          <!-- Macros Breakdown progress bars -->
+          <div class="md:col-span-8 flex flex-col justify-center space-y-4">
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider">Desglose de Macronutrientes</h4>
+            <div class="grid grid-cols-3 gap-3">
+              <!-- Proteina -->
+              <div class="bg-slate-950/60 p-3 rounded-2xl border border-slate-900">
+                <div class="flex justify-between items-center text-[10px] font-bold mb-1">
+                  <span class="text-rose-400">PROTEÍNA</span>
+                  <span id="macroProtText" class="text-white">0g</span>
+                </div>
+                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div id="macroProtBar" class="h-full bg-rose-500 transition-all duration-300" style="width: 0%"></div>
+                </div>
+              </div>
+              <!-- Carbs -->
+              <div class="bg-slate-950/60 p-3 rounded-2xl border border-slate-900">
+                <div class="flex justify-between items-center text-[10px] font-bold mb-1">
+                  <span class="text-amber-400">CARBS</span>
+                  <span id="macroCarbText" class="text-white">0g</span>
+                </div>
+                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div id="macroCarbBar" class="h-full bg-amber-500 transition-all duration-300" style="width: 0%"></div>
+                </div>
+              </div>
+              <!-- Grasa -->
+              <div class="bg-slate-950/60 p-3 rounded-2xl border border-slate-900">
+                <div class="flex justify-between items-center text-[10px] font-bold mb-1">
+                  <span class="text-emerald-400">GRASA</span>
+                  <span id="macroFatText" class="text-white">0g</span>
+                </div>
+                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                  <div id="macroFatBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-between items-center text-[10px] text-slate-450 border-t border-slate-850 pt-2.5">
+              <span>Distribución calórica ideal para Jean Dario</span>
+              <span class="font-bold text-sky-400">Proteína alta para retención muscular</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Modes Navigation Tabs inside Nutri -->
+        <div class="bg-slate-900/60 rounded-3xl p-5 space-y-5">
+          <div class="flex border-b border-slate-800 pb-3 flex-wrap gap-2">
+            <button onclick="switchNutriMode('photo')" id="btnNutriMode-photo" class="flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-sky-500/20 bg-sky-500/5 text-sky-400 transition-all">📸 Foto (Vision)</button>
+            <button onclick="switchNutriMode('text')" id="btnNutriMode-text" class="flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-850 text-slate-400 hover:text-white transition-all">📝 Texto</button>
+            <button onclick="switchNutriMode('search')" id="btnNutriMode-search" class="flex-1 min-h-[44px] py-2 px-3 text-center text-xs font-extrabold rounded-xl border border-slate-850 text-slate-400 hover:text-white transition-all">🔍 Búsqueda Rápida</button>
+          </div>
+
+          <!-- MODO 1: FOTO -->
+          <div id="nutriMode-photo" class="space-y-4">
+            <p class="text-xs text-slate-400">Sube una foto de tu plato. GPT-4o estimará las porciones y macros automáticamente sin báscula.</p>
+            <div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-800 rounded-2xl p-6 hover:border-sky-500/30 transition-colors bg-slate-950/20 cursor-pointer relative min-h-[140px]" onclick="triggerAiScan()">
+              <input type="file" id="aiPhotoInput" class="hidden" accept="image/*" capture="environment" onchange="startAiScan()">
+              <div id="aiUploadLabel" class="text-center space-y-2">
+                <span class="text-3xl block">📷</span>
+                <span class="text-xs font-semibold text-slate-350 block">Tomar Foto / Subir Imagen</span>
+                <span class="text-[10px] text-slate-500 block">Usa la cámara del celular o tu galería</span>
+              </div>
+              
+              <!-- Loading Spinner -->
+              <div id="aiLoadingSpinner" class="hidden absolute inset-0 bg-slate-950/95 rounded-2xl flex flex-col items-center justify-center space-y-3 p-4">
+                <div class="w-10 h-10 border-4 border-sky-400 border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-xs font-bold text-white">GPT-4o Vision analizando foto...</p>
+                <p class="text-[10px] text-slate-450 animate-pulse">Detectando ingredientes y estimando porciones</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODO 2: TEXTO -->
+          <div id="nutriMode-text" class="hidden space-y-4">
+            <p class="text-xs text-slate-400">Escribe lo que comiste y la porción estimada. La IA calculará los macros correspondientes.</p>
+            <div class="space-y-3">
+              <textarea id="foodTextDescription" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs text-white focus:outline-none focus:border-sky-500" placeholder="Ej: 2 huevos fritos, 1 taza de arroz blanco cocido y un pedazo mediano de pechuga de pollo a la plancha" rows="3"></textarea>
+              <button onclick="analyzeFoodText()" class="w-full min-h-[48px] bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white font-bold rounded-2xl text-xs active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-sky-500/10">
+                <span>🤖</span> Analizar Descripción con IA
+              </button>
+            </div>
+          </div>
+
+          <!-- MODO 3: BÚSQUEDA RÁPIDA (OFFLINE) -->
+          <div id="nutriMode-search" class="hidden space-y-4">
+            <p class="text-xs text-slate-400">Busca entre los 100 alimentos más comunes en Ecuador y Latinoamérica sin necesidad de internet.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+              <!-- Search bar -->
+              <div class="sm:col-span-8">
+                <input type="text" id="foodSearchInput" oninput="searchLocalFoods(this.value)" class="w-full min-h-[48px] bg-slate-950 border border-slate-800 rounded-xl px-4 text-xs text-white focus:outline-none focus:border-sky-500" placeholder="Buscar alimento (ej: arroz, pollo, aguacate)...">
+              </div>
+              <!-- Portion Selector -->
+              <div class="sm:col-span-4">
+                <select id="portionSizeSelector" onchange="adjustSearchPortion(this.value)" class="w-full min-h-[48px] bg-slate-950 border border-slate-800 rounded-xl px-3 text-xs text-slate-300 focus:outline-none focus:border-sky-500">
+                  <option value="100">Mediano (100g)</option>
+                  <option value="50">Pequeño (50g)</option>
+                  <option value="200">Grande (200g)</option>
+                  <option value="custom">Personalizado (g)...</option>
+                </select>
+              </div>
+            </div>
+            <!-- Custom portion input -->
+            <div id="customPortionRow" class="hidden flex gap-2 items-center bg-slate-950 p-3 rounded-2xl border border-slate-900 max-w-xs">
+              <span class="text-xs text-slate-400">Cantidad:</span>
+              <input type="number" id="customPortionGrams" value="100" oninput="searchLocalFoods(document.getElementById('foodSearchInput').value)" class="w-20 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-center text-xs text-white focus:outline-none focus:border-sky-500">
+              <span class="text-xs text-slate-400">gramos</span>
+            </div>
+
+            <!-- Search Results -->
+            <div id="searchResultsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[250px] overflow-y-auto pr-1 no-scrollbar">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Log Food List -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xl">📋</span>
+              <h3 class="text-sm font-bold text-white font-display">Alimentos de Hoy</h3>
+            </div>
+            <div class="text-xs font-semibold text-slate-455">
+              Total Logueado: <span id="loggedTotalCal" class="text-sky-400">0</span> kcal
+            </div>
+          </div>
+          
+          <div id="todayFoodLogContainer" class="space-y-3 divide-y divide-slate-850">
+            <!-- Empty state -->
+            <div id="foodLogEmptyState" class="py-8 text-center text-xs text-slate-500">No has agregado alimentos hoy. ¡Prueba analizando una foto o buscando un ingrediente!</div>
+          </div>
+        </div>
+
+        <!-- TRAFFIC LIGHT DIRECTORY (Kept for compatibility/compliance) -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-900 rounded-3xl p-6 shadow-xl space-y-6">
+          <h3 class="text-sm font-extrabold text-white font-display border-b border-slate-800 pb-3 flex items-center gap-2 uppercase tracking-wide">
+            <span>🚦</span> Semáforo de Alimentos
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-emerald-950/10 border border-emerald-500/20 rounded-2xl p-4">
+              <span class="px-3 py-1 rounded-xl bg-emerald-500/10 text-emerald-450 text-[10px] font-extrabold uppercase tracking-wider block text-center border border-emerald-500/20 mb-4">🟢 Comer Libre</span>
+              <div class="space-y-1 text-[10px] text-emerald-300">
+                <div class="py-1 border-b border-slate-900/60">Pollo sin piel</div>
+                <div class="py-1 border-b border-slate-900/60">Pescado blanco</div>
+                <div class="py-1 border-b border-slate-900/60">Huevos</div>
+                <div class="py-1 border-b border-slate-900/60">Atún en agua</div>
+                <div class="py-1 border-b border-slate-900/60">Brócoli</div>
+                <div class="py-1 border-b border-slate-900/60">Espinaca</div>
+                <div class="py-1 border-b border-slate-900/60">Limón</div>
+              </div>
+            </div>
+            <div class="bg-amber-950/10 border border-amber-500/20 rounded-2xl p-4">
+              <span class="px-3 py-1 rounded-xl bg-amber-500/10 text-amber-455 text-[10px] font-extrabold uppercase tracking-wider block text-center border border-amber-500/20 mb-4">🟡 Con Moderación</span>
+              <div class="space-y-1 text-[10px] text-amber-300">
+                <div class="py-1 border-b border-slate-900/60">Arroz integral</div>
+                <div class="py-1 border-b border-slate-900/60">Papa con cáscara</div>
+                <div class="py-1 border-b border-slate-900/60">Yuca cocida</div>
+                <div class="py-1 border-b border-slate-900/60">Plátano</div>
+                <div class="py-1 border-b border-slate-900/60">Pan integral</div>
+                <div class="py-1 border-b border-slate-900/60">Avena</div>
+                <div class="py-1 border-b border-slate-900/60">Aguacate (40g)</div>
+              </div>
+            </div>
+            <div class="bg-rose-950/10 border border-rose-500/20 rounded-2xl p-4">
+              <span class="px-3 py-1 rounded-xl bg-rose-500/10 text-rose-455 text-[10px] font-extrabold uppercase tracking-wider block text-center border border-rose-500/20 mb-4">🔴 Evitar</span>
+              <div class="space-y-1 text-[10px] text-rose-350">
+                <div class="py-1 border-b border-slate-900/60">Gaseosas</div>
+                <div class="py-1 border-b border-slate-900/60">Jugos azucarados</div>
+                <div class="py-1 border-b border-slate-900/60">Frituras</div>
+                <div class="py-1 border-b border-slate-900/60">Embutidos</div>
+                <div class="py-1 border-b border-slate-900/60">Pan blanco exceso</div>
+                <div class="py-1 border-b border-slate-900/60">Dulces/pasteles</div>
+                <div class="py-1 border-b border-slate-900/60">Alcohol</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+
       <!-- ============================================================ TAB: TRACKER -->
       
 
