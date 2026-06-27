@@ -2795,6 +2795,7 @@ const localFoodsDb = [
 let calorieGoal = 2000;
 let loggedFoods = [];
 let selectedSearchPortion = 100;
+const defaultGeminiKey = "";
 
 
 // Live Diagnostic Logger
@@ -3065,33 +3066,28 @@ function startAiScan() {
   const reader = new FileReader();
   reader.readAsDataURL(file);
   reader.onload = async function () {
-    const imageDataUrl = reader.result;
-    logDiag("Imagen convertida a Data URL exitosamente.");
+    const parts = reader.result.split(",");
+    const mimeType = parts[0].split(";")[0].split(":")[1];
+    const base64Data = parts[1];
+    logDiag(`Imagen leída: MIME = ${mimeType}. Base64 listo.`);
     
     const apiKey = localStorage.getItem("gemini_api_key");
     if (apiKey) {
-      logDiag("API Key encontrada en localStorage. Iniciando consulta a OpenAI Vision...");
-      const result = await analyzeFoodWithOpenAi(imageDataUrl);
+      logDiag("API Key de Gemini encontrada. Iniciando consulta a Google Gemini API...");
+      const result = await analyzeFoodWithGemini(base64Data, mimeType);
       if (spinner) spinner.classList.add("hidden");
       
       if (result && result.items) {
-        logDiag(`IA identificó ${result.items.length} alimentos.`);
+        logDiag(`Gemini identificó ${result.items.length} alimentos.`);
         result.items.forEach(item => {
           addFoodItem(item);
         });
       } else {
-        logDiag("La respuesta de la IA no fue válida. Cargando simulación local de respaldo...");
+        logDiag("La respuesta de Gemini no fue válida. Cargando simulación local de respaldo...");
         runPhotoFallback();
       }
     } else {
-      logDiag("No se encontró una API Key en Ajustes. Activando simulación local por defecto.");
-      setTimeout(() => {
-        if (spinner) spinner.classList.add("hidden");
-        runPhotoFallback();
-      }, 2200);
-    }
-    fileInput.value = "";
-  };
+      logDiag("No se encontró una API Key de Gemini en Ajustes. Activando simulación local...");
       setTimeout(() => {
         if (spinner) spinner.classList.add("hidden");
         runPhotoFallback();
