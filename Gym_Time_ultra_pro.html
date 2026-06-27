@@ -2742,6 +2742,13 @@ function logDiag(msg) {
 
 // Initialize Calorie Tracker
 function initCalorieTracker() {
+  // Migrate older keys to the new unified format
+  if (!localStorage.getItem("geminiapikey")) {
+    const oldKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
+    if (oldKey) {
+      localStorage.setItem("geminiapikey", oldKey);
+    }
+  }
   const savedGoal = localStorage.getItem("calorie_goal");
   if (savedGoal) {
     calorieGoal = parseInt(savedGoal);
@@ -2990,6 +2997,11 @@ function parseTextDescriptionLocally(text) {
 }
 
 // Mode 1: AI PHOTO DEDUCTION (Vision API with mock/local fallback)
+function triggerAiScan() {
+  const fileInput = document.getElementById("aiPhotoInput");
+  if (fileInput) fileInput.click();
+}
+
 function startAiScan() {
   const fileInput = document.getElementById("aiPhotoInput");
   if (fileInput.files.length === 0) return;
