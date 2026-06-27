@@ -3065,7 +3065,7 @@ function runPhotoFallback() {
   showToast("⚠️ Simulación cargada (Sin API Key válida)");
 }
 
-async function analyzeFoodWithGemini(base64Data, mimeType) {
+async function analyzeFoodWithGemini(base64Data, mimeType, retryCount = 0) {
   const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
   
@@ -3123,11 +3123,19 @@ async function analyzeFoodWithGemini(base64Data, mimeType) {
     
     logDiag(`Respuesta HTTP de Gemini: Código ${response.status}`);
     
+    if (response.status === 429 || response.status === 503) {
+      if (retryCount < 2) {
+        logDiag(`Google Gemini sobrecargado (Status ${response.status}). Reintentando en 2 segundos... (Intento ${retryCount + 1}/3)`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return analyzeFoodWithGemini(base64Data, mimeType, retryCount + 1);
+      }
+    }
+    
     if (!response.ok) {
       const errRes = await response.json().catch(() => ({}));
       const errMsg = errRes.error ? errRes.error.message : "Error desconocido en el servidor de Google Gemini.";
       logDiag(`ERROR DE GEMINI: ${errMsg}`);
-      alert(`Error de Gemini: ${errMsg}`);
+      alert(`Error de Gemini (Servidores saturados. Reintenta en unos segundos): ${errMsg}`);
       return null;
     }
     
@@ -3145,13 +3153,18 @@ async function analyzeFoodWithGemini(base64Data, mimeType) {
     logDiag("JSON parseado con éxito.");
     return parsed;
   } catch (err) {
+    if (retryCount < 2) {
+      logDiag(`Excepción de red en Gemini: ${err.message}. Reintentando en 2 segundos... (Intento ${retryCount + 1}/3)`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return analyzeFoodWithGemini(base64Data, mimeType, retryCount + 1);
+    }
     logDiag(`EXCEPCIÓN EN LLAMADA GEMINI: ${err.message}`);
-    alert(`Error de conexión o código en Gemini: ${err.message}`);
+    alert(`Error de conexión en Gemini: ${err.message}`);
     return null;
   }
 }
 
-async function analyzeFoodTextWithGemini(description) {
+async function analyzeFoodTextWithGemini(description, retryCount = 0) {
   const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
   
@@ -3199,6 +3212,14 @@ async function analyzeFoodTextWithGemini(description) {
       body: JSON.stringify(payload)
     });
     
+    if (response.status === 429 || response.status === 503) {
+      if (retryCount < 2) {
+        logDiag(`Google Gemini sobrecargado en texto (Status ${response.status}). Reintentando en 2 segundos... (Intento ${retryCount + 1}/3)`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return analyzeFoodTextWithGemini(description, retryCount + 1);
+      }
+    }
+    
     if (!response.ok) {
       const errRes = await response.json().catch(() => ({}));
       const errMsg = errRes.error ? errRes.error.message : "Error.";
@@ -3211,6 +3232,11 @@ async function analyzeFoodTextWithGemini(description) {
     rawText = rawText.replace(/```json/i, "").replace(/```/g, "").trim();
     return JSON.parse(rawText);
   } catch (err) {
+    if (retryCount < 2) {
+      logDiag(`Excepción de red en texto Gemini: ${err.message}. Reintentando en 2 segundos... (Intento ${retryCount + 1}/3)`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return analyzeFoodTextWithGemini(description, retryCount + 1);
+    }
     logDiag(`EXCEPCIÓN TEXTO GEMINI: ${err.message}`);
     return null;
   }
