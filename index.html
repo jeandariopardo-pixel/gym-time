@@ -2825,7 +2825,7 @@ function initCalorieTracker() {
     }
   }
   
-  const apiKey = localStorage.getItem("openai_api_key");
+  const apiKey = localStorage.getItem("gemini_api_key");
   const apiKeyInput = document.getElementById("openaiApiKeyInput");
   if (apiKey && apiKeyInput) {
     apiKeyInput.value = apiKey;
@@ -2848,8 +2848,8 @@ function toggleSettings() {
 
 function saveApiKey() {
   const key = document.getElementById("openaiApiKeyInput").value.trim();
-  localStorage.setItem("openai_api_key", key);
-  showToast("🔑 API Key de OpenAI guardada");
+  localStorage.setItem("gemini_api_key", key);
+  showToast("🔑 API Key de Gemini guardada");
   toggleSettings();
 }
 
@@ -3068,7 +3068,7 @@ function startAiScan() {
     const imageDataUrl = reader.result;
     logDiag("Imagen convertida a Data URL exitosamente.");
     
-    const apiKey = localStorage.getItem("openai_api_key");
+    const apiKey = localStorage.getItem("gemini_api_key");
     if (apiKey) {
       logDiag("API Key encontrada en localStorage. Iniciando consulta a OpenAI Vision...");
       const result = await analyzeFoodWithOpenAi(imageDataUrl);
@@ -3113,7 +3113,7 @@ function runPhotoFallback() {
 }
 
 async function analyzeFoodWithOpenAi(imageDataUrl) {
-  const apiKey = localStorage.getItem("openai_api_key");
+  const apiKey = localStorage.getItem("gemini_api_key");
   const prompt = "Analiza esta imagen de comida. Identifica CADA alimento visible y proporciona en formato JSON estricto: {items: [{name, portion_estimate_g, calories, protein_g, carbs_g, fat_g}], totals: {calories, protein_g, carbs_g, fat_g}, confidence: 'high/medium/low', notes: string}. Estima las porciones visualmente sin báscula.";
   
   const payload = {
@@ -3182,49 +3182,31 @@ async function analyzeFoodText() {
     return;
   }
   
-  const apiKey = localStorage.getItem("openai_api_key");
+  const apiKey = localStorage.getItem("gemini_api_key");
   const btn = document.querySelector("#nutriMode-text button");
   const originalHtml = btn.innerHTML;
   btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Analizando...`;
   btn.disabled = true;
   
   if (apiKey) {
-    const prompt = `Analiza esta descripción de comida: "${desc}". Identifica CADA alimento y proporciona en formato JSON estricto: {items: [{name, portion_estimate_g, calories, protein_g, carbs_g, fat_g}], totals: {calories, protein_g, carbs_g, fat_g}, confidence: 'high/medium/low', notes: string}. Estima las porciones visualmente sin báscula.`;
-    const payload = {
-      model: "gpt-4o-mini",
-      response_format: { type: "json_object" },
-      messages: [{ role: "user", content: prompt }]
-    };
-    
+    logDiag("API Key de Gemini encontrada. Iniciando análisis de descripción...");
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify(payload)
-      });
-      
+      const result = await analyzeFoodTextWithGemini(desc);
       btn.innerHTML = originalHtml;
       btn.disabled = false;
       
-      if (response.ok) {
-        const data = await response.json();
-        const result = JSON.parse(data.choices[0].message.content);
-        if (result && result.items) {
-          result.items.forEach(item => {
-            addFoodItem(item);
-          });
-          descInput.value = "";
-        } else {
-          runTextFallback(desc);
-        }
+      if (result && result.items) {
+        logDiag(`Gemini identificó ${result.items.length} alimentos en la descripción.`);
+        result.items.forEach(item => {
+          addFoodItem(item);
+        });
+        descInput.value = "";
       } else {
+        logDiag("El análisis de texto falló. Aplicando estimación local...");
         runTextFallback(desc);
       }
     } catch (err) {
-      console.error(err);
+      logDiag(`Error en análisis de texto: ${err.message}`);
       btn.innerHTML = originalHtml;
       btn.disabled = false;
       runTextFallback(desc);
