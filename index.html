@@ -2764,8 +2764,6 @@ function toggleNutri(ctx, btn) {
 
 
 // 100 Common Latin/Ecuadorian Foods Local Database (Offline lookup)
-
-// 100 Common Latin/Ecuadorian Foods Local Database (Offline lookup)
 const localFoodsDb = [
   { name: "Arroz blanco cocido", calories: 130, protein: 2.7, carbs: 28, fat: 0.3, portion_g: 100 },
   { name: "Arroz integral cocido", calories: 111, protein: 2.6, carbs: 23, fat: 0.9, portion_g: 100 },
@@ -2816,7 +2814,7 @@ const localFoodsDb = [
   { name: "Zanahoria cocida", calories: 35, protein: 0.8, carbs: 8.2, fat: 0.2, portion_g: 100 },
   { name: "Tomate riñón fresco", calories: 18, protein: 0.9, carbs: 3.9, fat: 0.2, portion_g: 100 },
   { name: "Pepino fresco", calories: 15, protein: 0.6, carbs: 3.6, fat: 0.1, portion_g: 100 },
-  { name: "Lechuga", calories: 15, protein: 1.4, carbs: 2.9, fat: 0.2, region: "Ecuador" },
+  { name: "Lechuga", calories: 15, protein: 1.4, carbs: 2.9, fat: 0.2, portion_g: 100 },
   { name: "Cebolla paiteña / roja", calories: 40, protein: 1.1, carbs: 9.3, fat: 0.1, portion_g: 100 },
   { name: "Piña fresca", calories: 50, protein: 0.5, carbs: 13.0, fat: 0.1, portion_g: 100 },
   { name: "Plátano / Guineo maduro", calories: 89, protein: 1.1, carbs: 22.8, fat: 0.3, portion_g: 100 },
@@ -2834,7 +2832,6 @@ let calorieGoal = 2000;
 let loggedFoods = [];
 let selectedSearchPortion = 100;
 const defaultGeminiKey = "";
-
 
 // Live Diagnostic Logger
 function logDiag(msg) {
@@ -2864,7 +2861,7 @@ function initCalorieTracker() {
     }
   }
   
-  const apiKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
+  const apiKey = localStorage.getItem("geminiapikey");
   const apiKeyInput = document.getElementById("openaiApiKeyInput");
   if (apiKey && apiKeyInput) {
     apiKeyInput.value = apiKey;
@@ -2887,8 +2884,7 @@ function toggleSettings() {
 
 function saveApiKey() {
   const key = document.getElementById("openaiApiKeyInput").value.trim();
-  localStorage.setItem("gemini_api_key", key);
-  localStorage.setItem("openai_api_key", key);
+  localStorage.setItem("geminiapikey", key);
   showToast("🔑 API Key de Gemini guardada");
   toggleSettings();
 }
@@ -2911,9 +2907,9 @@ function updateCalorieDashboard() {
   loggedFoods.forEach(food => {
     // Parse to ensure numeric operations (Prevent JS String Concatenation Bug)
     totalCal += parseFloat(food.calories) || 0;
-    totalProt += parseFloat(food.protein_g !== undefined ? food.protein_g : (food.protein !== undefined ? food.protein : 0)) || 0;
-    totalCarb += parseFloat(food.carbs_g !== undefined ? food.carbs_g : (food.carbs !== undefined ? food.carbs : 0)) || 0;
-    totalFat += parseFloat(food.fat_g !== undefined ? food.fat_g : (food.fat !== undefined ? food.fat : 0)) || 0;
+    totalProt += parseFloat(food.proteing !== undefined ? food.proteing : (food.protein_g !== undefined ? food.protein_g : (food.protein !== undefined ? food.protein : 0))) || 0;
+    totalCarb += parseFloat(food.carbsg !== undefined ? food.carbsg : (food.carbs_g !== undefined ? food.carbs_g : (food.carbs !== undefined ? food.carbs : 0))) || 0;
+    totalFat += parseFloat(food.fatg !== undefined ? food.fatg : (food.fat_g !== undefined ? food.fat_g : (food.fat !== undefined ? food.fat : 0))) || 0;
   });
   
   const countText = document.getElementById("calorieCircleText");
@@ -2990,7 +2986,7 @@ function renderFoodLog() {
       <div class="flex items-center justify-between py-3 bg-slate-900/10 border-b border-slate-900/60 flex-wrap gap-2">
         <div>
           <strong class="text-xs font-bold text-white block">${food.name}</strong>
-          <span class="text-[10px] text-slate-455">Estimación: ${food.portion_estimate_g}g · P: ${Math.round(food.protein_g)}g, C: ${Math.round(food.carbs_g)}g, G: ${Math.round(food.fat_g)}g</span>
+          <span class="text-[10px] text-slate-455">Estimación: ${food.portionestimateg || 100}g · P: ${Math.round(food.proteing || 0)}g, C: ${Math.round(food.carbsg || 0)}g, G: ${Math.round(food.fatg || 0)}g</span>
         </div>
         <div class="flex items-center gap-3">
           <span class="text-xs font-extrabold text-white">${Math.round(food.calories)} kcal</span>
@@ -3006,11 +3002,11 @@ function addFoodItem(food) {
   // Normalize and parse keys to prevent missing macro calculations
   const normalized = {
     name: food.name || "Alimento",
-    portion_estimate_g: parseFloat(food.portion_estimate_g) || 100,
+    portionestimateg: parseFloat(food.portionestimateg !== undefined ? food.portionestimateg : (food.portion_estimate_g !== undefined ? food.portion_estimate_g : 100)) || 100,
     calories: parseFloat(food.calories) || 0,
-    protein_g: parseFloat(food.protein_g !== undefined ? food.protein_g : (food.protein !== undefined ? food.protein : 0)) || 0,
-    carbs_g: parseFloat(food.carbs_g !== undefined ? food.carbs_g : (food.carbs !== undefined ? food.carbs : 0)) || 0,
-    fat_g: parseFloat(food.fat_g !== undefined ? food.fat_g : (food.fat !== undefined ? food.fat : 0)) || 0
+    proteing: parseFloat(food.proteing !== undefined ? food.proteing : (food.protein_g !== undefined ? food.protein_g : (food.protein !== undefined ? food.protein : 0))) || 0,
+    carbsg: parseFloat(food.carbsg !== undefined ? food.carbsg : (food.carbs_g !== undefined ? food.carbs_g : (food.carbs !== undefined ? food.carbs : 0))) || 0,
+    fatg: parseFloat(food.fatg !== undefined ? food.fatg : (food.fat_g !== undefined ? food.fat_g : (food.fat !== undefined ? food.fat : 0))) || 0
   };
   
   loggedFoods.push(normalized);
@@ -3060,7 +3056,6 @@ function parseTextDescriptionLocally(text) {
   const words = clean.split(/[\s,.;()]+/);
   let estimatedItems = [];
   
-  // Search for matches in local database
   localFoodsDb.forEach(food => {
     const foodKeywords = food.name.toLowerCase().split(/[\s()]+/);
     const matches = foodKeywords.filter(keyword => {
@@ -3068,18 +3063,16 @@ function parseTextDescriptionLocally(text) {
       return words.some(word => word.startsWith(keyword) || keyword.startsWith(word));
     });
     
-    // Check match significance
     if (matches.length >= 1) {
-      // Check if we already logged a similar item
       const baseName = food.name.split(" ")[0].toLowerCase();
       if (!estimatedItems.some(i => i.name.toLowerCase().startsWith(baseName))) {
         estimatedItems.push({
           name: food.name + " (Estimado Local)",
-          portion_estimate_g: 100,
+          portionestimateg: 100,
           calories: food.calories,
-          protein_g: food.protein,
-          carbs_g: food.carbs,
-          fat_g: food.fat
+          proteing: food.protein,
+          carbsg: food.carbs,
+          fatg: food.fat
         });
       }
     }
@@ -3110,7 +3103,7 @@ function startAiScan() {
     const base64Data = parts[1];
     logDiag(`Imagen leída: MIME = ${mimeType}. Base64 listo.`);
     
-    const apiKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
+    const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
     if (apiKey) {
       logDiag("API Key de Gemini encontrada. Iniciando consulta a Google Gemini API...");
       const result = await analyzeFoodWithGemini(base64Data, mimeType);
@@ -3119,7 +3112,15 @@ function startAiScan() {
       if (result && result.items) {
         logDiag(`Gemini identificó ${result.items.length} alimentos.`);
         result.items.forEach(item => {
-          addFoodItem(item);
+          // Normalize API keys structure to camelCase internally
+          addFoodItem({
+            name: item.name,
+            portionestimateg: item.portion_estimate_g || item.portionestimateg,
+            calories: item.calories,
+            proteing: item.protein_g || item.proteing,
+            carbsg: item.carbs_g || item.carbsg,
+            fatg: item.fat_g || item.fatg
+          });
         });
       } else {
         logDiag("La respuesta de Gemini no fue válida. Cargando simulación local de respaldo...");
@@ -3138,72 +3139,162 @@ function startAiScan() {
 
 function runPhotoFallback() {
   const plates = [
-    { name: "Plato Simulado: Pollo, arroz y aguacate (Sin API Key)", portion_estimate_g: 350, calories: 540, protein_g: 35, carbs_g: 56, fat_g: 17 },
-    { name: "Plato Simulado: Encebollado con yuca (Sin API Key)", portion_estimate_g: 400, calories: 420, protein_g: 28, carbs_g: 42, fat_g: 8 },
-    { name: "Plato Simulado: Huevo con maduro frito (Sin API Key)", portion_estimate_g: 220, calories: 448, protein_g: 15, carbs_g: 33, fat_g: 28 }
+    { name: "Plato Simulado: Pollo, arroz y aguacate (Sin API Key)", portionestimateg: 350, calories: 540, proteing: 35, carbsg: 56, fatg: 17 },
+    { name: "Plato Simulado: Encebollado con yuca (Sin API Key)", portionestimateg: 400, calories: 420, proteing: 28, carbsg: 42, fatg: 8 },
+    { name: "Plato Simulado: Huevo con maduro frito (Sin API Key)", portionestimateg: 220, calories: 448, proteing: 15, carbsg: 33, fatg: 28 }
   ];
   const selected = plates[Math.floor(Math.random() * plates.length)];
   addFoodItem(selected);
   showToast("⚠️ Simulación cargada (Sin API Key válida)");
 }
 
-async function analyzeFoodWithOpenAi(imageDataUrl) {
-  const apiKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
-  const prompt = "Analiza esta imagen de comida. Identifica CADA alimento visible y proporciona en formato JSON estricto: {items: [{name, portion_estimate_g, calories, protein_g, carbs_g, fat_g}], totals: {calories, protein_g, carbs_g, fat_g}, confidence: 'high/medium/low', notes: string}. Estima las porciones visualmente sin báscula.";
+async function analyzeFoodWithGemini(base64Data, mimeType) {
+  const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
+  
+  const prompt = "Analiza esta imagen de comida. Identifica CADA alimento visible y proporciona un desglose estructurado con porciones en gramos, calorías y macronutrientes.";
   
   const payload = {
-    model: "gpt-4o-mini",
-    response_format: { type: "json_object" },
-    messages: [
+    contents: [
       {
-        role: "user",
-        content: [
-          { type: "text", text: prompt },
+        parts: [
+          { text: prompt },
           {
-            type: "image_url",
-            image_url: {
-              url: imageDataUrl
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data
             }
           }
         ]
       }
-    ]
+    ],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          items: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                name: { type: "STRING" },
+                portion_estimate_g: { type: "NUMBER" },
+                calories: { type: "NUMBER" },
+                protein_g: { type: "NUMBER" },
+                carbs_g: { type: "NUMBER" },
+                fat_g: { type: "NUMBER" }
+              },
+              required: ["name", "portion_estimate_g", "calories", "protein_g", "carbs_g", "fat_g"]
+            }
+          }
+        },
+        required: ["items"]
+      }
+    }
   };
   
-  logDiag("Enviando petición POST a OpenAI (model: gpt-4o-mini)...");
+  logDiag("Enviando petición HTTP a Google Gemini API (model: gemini-flash-latest)...");
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch(url, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
     });
     
-    logDiag(`Respuesta HTTP recibida: Código ${response.status}`);
+    logDiag(`Respuesta HTTP de Gemini: Código ${response.status}`);
     
     if (!response.ok) {
       const errRes = await response.json().catch(() => ({}));
-      const errMsg = errRes.error ? errRes.error.message : "Error desconocido.";
-      logDiag(`ERROR DE API OPENAI: ${errMsg}`);
-      alert(`Error de OpenAI: ${errMsg}`);
+      const errMsg = errRes.error ? errRes.error.message : "Error desconocido en el servidor de Google Gemini.";
+      logDiag(`ERROR DE GEMINI: ${errMsg}`);
+      alert(`Error de Gemini: ${errMsg}`);
       return null;
     }
     
     const data = await response.json();
-    let rawText = data.choices[0].message.content;
-    logDiag(`Texto crudo recibido de la IA: ${rawText.substring(0, 80)}...`);
+    if (!data.candidates || data.candidates.length === 0) {
+      logDiag("Gemini no retornó candidatos de respuesta.");
+      return null;
+    }
     
-    // Stripping markdown wrapper codeblocks if model ignores json_object rule
+    let rawText = data.candidates[0].content.parts[0].text;
+    logDiag(`Respuesta cruda de Gemini: ${rawText.substring(0, 100)}...`);
+    
     rawText = rawText.replace(/```json/i, "").replace(/```/g, "").trim();
-    
     const parsed = JSON.parse(rawText);
-    logDiag("JSON parseado correctamente.");
+    logDiag("JSON parseado con éxito.");
     return parsed;
   } catch (err) {
-    logDiag(`EXCEPCIÓN DE RED / CÓDIGO: ${err.message}`);
-    alert(`Error de red o código: ${err.message}`);
+    logDiag(`EXCEPCIÓN EN LLAMADA GEMINI: ${err.message}`);
+    alert(`Error de conexión o código en Gemini: ${err.message}`);
+    return null;
+  }
+}
+
+async function analyzeFoodTextWithGemini(description) {
+  const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
+  
+  const prompt = `Analiza esta descripción de comida: "${description}". Identifica CADA alimento y proporciona las porciones en gramos, calorías y macronutrientes.`;
+  
+  const payload = {
+    contents: [
+      {
+        parts: [{ text: prompt }]
+      }
+    ],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          items: {
+            type: "ARRAY",
+            items: {
+              type: "OBJECT",
+              properties: {
+                name: { type: "STRING" },
+                portion_estimate_g: { type: "NUMBER" },
+                calories: { type: "NUMBER" },
+                protein_g: { type: "NUMBER" },
+                carbs_g: { type: "NUMBER" },
+                fat_g: { type: "NUMBER" }
+              },
+              required: ["name", "portion_estimate_g", "calories", "protein_g", "carbs_g", "fat_g"]
+            }
+          }
+        },
+        required: ["items"]
+      }
+    }
+  };
+  
+  try {
+    logDiag("Enviando descripción de texto a Google Gemini API...");
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      const errRes = await response.json().catch(() => ({}));
+      const errMsg = errRes.error ? errRes.error.message : "Error.";
+      logDiag(`ERROR TEXTO GEMINI: ${errMsg}`);
+      return null;
+    }
+    
+    const data = await response.json();
+    let rawText = data.candidates[0].content.parts[0].text;
+    rawText = rawText.replace(/```json/i, "").replace(/```/g, "").trim();
+    return JSON.parse(rawText);
+  } catch (err) {
+    logDiag(`EXCEPCIÓN TEXTO GEMINI: ${err.message}`);
     return null;
   }
 }
@@ -3217,7 +3308,7 @@ async function analyzeFoodText() {
     return;
   }
   
-  const apiKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
+  const apiKey = localStorage.getItem("geminiapikey") || defaultGeminiKey;
   const btn = document.querySelector("#nutriMode-text button");
   const originalHtml = btn.innerHTML;
   btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Analizando...`;
@@ -3233,7 +3324,14 @@ async function analyzeFoodText() {
       if (result && result.items) {
         logDiag(`Gemini identificó ${result.items.length} alimentos en la descripción.`);
         result.items.forEach(item => {
-          addFoodItem(item);
+          addFoodItem({
+            name: item.name,
+            portionestimateg: item.portion_estimate_g || item.portionestimateg,
+            calories: item.calories,
+            proteing: item.protein_g || item.proteing,
+            carbsg: item.carbs_g || item.carbsg,
+            fatg: item.fat_g || item.fatg
+          });
         });
         descInput.value = "";
       } else {
@@ -3256,7 +3354,6 @@ async function analyzeFoodText() {
 }
 
 function runTextFallback(desc) {
-  // Use smart local text parser database fallback
   const localResult = parseTextDescriptionLocally(desc);
   if (localResult && localResult.items) {
     localResult.items.forEach(item => {
@@ -3264,16 +3361,15 @@ function runTextFallback(desc) {
     });
     showToast("⚡ Estimación de base de datos local aplicada");
   } else {
-    // If no food matches found in local DB
     addFoodItem({
       name: desc.length > 25 ? desc.substring(0, 22) + "..." : desc,
-      portion_estimate_g: 150,
+      portionestimateg: 150,
       calories: 380,
-      protein_g: 20,
-      carbs_g: 45,
-      fat_g: 12
+      proteing: 20,
+      carbsg: 45,
+      fatg: 12
     });
-    showToast("⚠️ Comida genérica registrada (Ingresa tu API Key en ajustes)");
+    showToast("⚠️ Comida genérica registrada (Sin API Key)");
   }
   document.getElementById("foodTextDescription").value = "";
 }
@@ -3328,58 +3424,16 @@ function adjustSearchPortion(val) {
   searchLocalFoods(document.getElementById("foodSearchInput").value);
 }
 
-// Override logMeal to accept macros
+// Unified logMeal
 function logMeal(calories, name, grams=150, prot=20, carb=35, fat=10) {
   addFoodItem({
     name: name,
-    portion_estimate_g: grams,
+    portionestimateg: grams,
     calories: calories,
-    protein_g: prot,
-    carbs_g: carb,
-    fat_g: fat
+    proteing: prot,
+    carbsg: carb,
+    fatg: fat
   });
-}
-
-
-// Calories Progress Logic
-let currentCalories = 0;
-const targetCalories = 1850;
-
-function updateCalorieProgress(calories) {
-  currentCalories += calories;
-  const countText = document.getElementById('calorieCountText');
-  const progressBar = document.getElementById('calorieProgressBar');
-  if (countText) countText.textContent = currentCalories.toLocaleString();
-  if (progressBar) {
-    const percent = Math.min((currentCalories / targetCalories) * 100, 100);
-    progressBar.style.width = percent + '%';
-  }
-}
-
-// Log Meal Action
-function logMeal(calories, mealName) {
-  updateCalorieProgress(calories);
-  showToast(`✅ Agregado: ${calories} kcal (${mealName})`);
-}
-
-// AI Scanner Functions
-function triggerAiScan() {
-  document.getElementById('aiPhotoInput').click();
-}
-
-function startAiScan() {
-  const fileInput = document.getElementById('aiPhotoInput');
-  if (fileInput.files.length === 0) return;
-  const spinner = document.getElementById('aiLoadingSpinner');
-  if (spinner) spinner.classList.remove('hidden');
-  
-  setTimeout(() => {
-    if (spinner) spinner.classList.add('hidden');
-    const calories = 480;
-    const mealName = "Pollo, vegetales y quinua (IA)";
-    logMeal(calories, mealName);
-    fileInput.value = '';
-  }, 2200);
 }
 
 // Toast Notifier
@@ -3400,21 +3454,18 @@ function showToast(message) {
   }, 3500);
 }
 
+// Toast container singleton check
 function createToastContainer() {
-  const container = document.createElement('div');
+  let container = document.getElementById('toastContainer');
+  if (container) return container;
+  container = document.createElement('div');
   container.id = 'toastContainer';
   container.className = "fixed top-6 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2.5 pointer-events-none w-full max-w-sm px-4";
   document.body.appendChild(container);
   return container;
 }
 
-let timerInterval = null;
-let timerRemaining = 45;
-function formatTime(sec){ 
-  const m = String(Math.floor(sec/60)).padStart(2,'0'); 
-  const s = String(sec%60).padStart(2,'0'); 
-  return `${m}:${s}`; 
-}
+// Rest Timer Functions
 function startTimer(sec){
   clearInterval(timerInterval);
   timerRemaining = sec;
@@ -3426,7 +3477,6 @@ function startTimer(sec){
     else el.classList.add('timer-blue');
   }
   
-  // Slide up timer if hidden
   const timerToast = document.getElementById('globalTimerToast');
   if (timerToast) {
     timerToast.classList.remove('opacity-0', 'pointer-events-none');
