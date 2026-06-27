@@ -2826,7 +2826,7 @@ function initCalorieTracker() {
     }
   }
   
-  const apiKey = localStorage.getItem("gemini_api_key");
+  const apiKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
   const apiKeyInput = document.getElementById("openaiApiKeyInput");
   if (apiKey && apiKeyInput) {
     apiKeyInput.value = apiKey;
@@ -2850,6 +2850,7 @@ function toggleSettings() {
 function saveApiKey() {
   const key = document.getElementById("openaiApiKeyInput").value.trim();
   localStorage.setItem("gemini_api_key", key);
+  localStorage.setItem("openai_api_key", key);
   showToast("🔑 API Key de Gemini guardada");
   toggleSettings();
 }
@@ -3071,7 +3072,7 @@ function startAiScan() {
     const base64Data = parts[1];
     logDiag(`Imagen leída: MIME = ${mimeType}. Base64 listo.`);
     
-    const apiKey = localStorage.getItem("gemini_api_key");
+    const apiKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
     if (apiKey) {
       logDiag("API Key de Gemini encontrada. Iniciando consulta a Google Gemini API...");
       const result = await analyzeFoodWithGemini(base64Data, mimeType);
@@ -3099,17 +3100,17 @@ function startAiScan() {
 
 function runPhotoFallback() {
   const plates = [
-    { name: "Pechuga de pollo con arroz blanco y aguacate (Simulación)", portion_estimate_g: 350, calories: 540, protein_g: 35, carbs_g: 56, fat_g: 17 },
-    { name: "Encebollado de pescado con porción de yuca (Simulación)", portion_estimate_g: 400, calories: 420, protein_g: 28, carbs_g: 42, fat_g: 8 },
-    { name: "Huevo frito con plátano maduro frito (Simulación)", portion_estimate_g: 220, calories: 448, protein_g: 15, carbs_g: 33, fat_g: 28 }
+    { name: "Plato Simulado: Pollo, arroz y aguacate (Sin API Key)", portion_estimate_g: 350, calories: 540, protein_g: 35, carbs_g: 56, fat_g: 17 },
+    { name: "Plato Simulado: Encebollado con yuca (Sin API Key)", portion_estimate_g: 400, calories: 420, protein_g: 28, carbs_g: 42, fat_g: 8 },
+    { name: "Plato Simulado: Huevo con maduro frito (Sin API Key)", portion_estimate_g: 220, calories: 448, protein_g: 15, carbs_g: 33, fat_g: 28 }
   ];
   const selected = plates[Math.floor(Math.random() * plates.length)];
   addFoodItem(selected);
-  showToast("⚠️ Simulación cargada (Ingresa tu API Key en ajustes para fotos reales)");
+  showToast("⚠️ Simulación cargada (Sin API Key válida)");
 }
 
 async function analyzeFoodWithOpenAi(imageDataUrl) {
-  const apiKey = localStorage.getItem("gemini_api_key");
+  const apiKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
   const prompt = "Analiza esta imagen de comida. Identifica CADA alimento visible y proporciona en formato JSON estricto: {items: [{name, portion_estimate_g, calories, protein_g, carbs_g, fat_g}], totals: {calories, protein_g, carbs_g, fat_g}, confidence: 'high/medium/low', notes: string}. Estima las porciones visualmente sin báscula.";
   
   const payload = {
@@ -3178,7 +3179,7 @@ async function analyzeFoodText() {
     return;
   }
   
-  const apiKey = localStorage.getItem("gemini_api_key");
+  const apiKey = localStorage.getItem("gemini_api_key") || localStorage.getItem("openai_api_key");
   const btn = document.querySelector("#nutriMode-text button");
   const originalHtml = btn.innerHTML;
   btn.innerHTML = `<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Analizando...`;
