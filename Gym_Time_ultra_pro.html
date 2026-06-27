@@ -2742,6 +2742,37 @@ function loadTrackerInputs() {
   });
 }
 
+
+// Tab Navigation Logic (Restored)
+function showTab(name) {
+  if (name === 'nutricion' || name === 'resumen') {
+    if (typeof updateCalorieDashboard === 'function') {
+      updateCalorieDashboard();
+    }
+  }
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  
+  // Show section
+  const section = document.getElementById('tab-' + name);
+  if (section) section.classList.add('active');
+  
+  // Set active tab button on both sidebar and mobile navigation
+  document.querySelectorAll(`[onclick*="showTab('${name}')"]`).forEach(btn => {
+    btn.classList.add('active');
+  });
+  
+  // Slide down timer if it exists and is NOT running (PUNTO 6)
+  const timerToast = document.getElementById('globalTimerToast');
+  if (timerToast) {
+    const isRunning = (typeof timerInterval !== 'undefined' && timerInterval) && (typeof timerRemaining !== 'undefined' && timerRemaining > 0);
+    if (!isRunning) {
+      timerToast.classList.add('opacity-0', 'pointer-events-none');
+      timerToast.style.transform = 'translateY(100px)';
+    }
+  }
+}
+
 function startTimer(sec){
   clearInterval(timerInterval);
   timerRemaining = sec;
